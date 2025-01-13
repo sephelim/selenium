@@ -33,7 +33,7 @@ All code must have a direction or purpose. This doesn't have to be a specific fe
 Submitted code cannot be slop. Slop code is good for testing, but in an environment like Selenium final code structure should be streamlined. It should take as little memory as possible in Javascript, and be readable. For example, in a place where it's possible, `array.prototype.forEach` functions should be removed in favor of `for` loops or other, more efficient methods. Should you find grossly unoptimized code, please let maintainers know.
 
 #### [c] Continuity
-Code must fit well with the rest of the engine. New features are completely fine, encouraged even should they fit the engine's usecase, but they must be implemented in similar ways to the rest of the engine. For example, a namespace with methods implemented within a nested scope is not allowed--no other namespace within the framework is implemented in this way. The goal of Selenium is to streamline the process of game development as much as possible.
+Code must fit well with the rest of the engine. New features are completely fine, encouraged even should they fit the engine's usecase, but they must be implemented in similar ways to the rest of the engine. For example, a namespace with methods implemented within a nested scope is not allowed--no other namespace within the framework is implemented in this way. The goal of Selenium is to streamline the process of game development as much as possible. Ensure that code is also formatted correctly using [clang-format](https://clang.llvm.org/docs/ClangFormat.html).
 
 ---
 
