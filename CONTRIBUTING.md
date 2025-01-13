@@ -94,7 +94,14 @@ Certain objects must also **always** be described via documentation. Things like
  * @returns [return explanation if not void]
  */
 
-// global variable & namespace signature
+// global variable signature
+/**
+ * [variable description]
+ * @type {[type]}
+ * @since [version number]
+ */
+
+// namespace signature
 /**
  * [variable description]
  * @since [version number]

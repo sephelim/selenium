@@ -37,6 +37,13 @@ import {Selenium_Utilities} from "./Framework/Utilities.js";
 let render_target = null;
 
 /**
+ * A hashmap of the loaded scenes keyed by their name.
+ * @type {Map<string, WebGLProgram>}
+ * @since 0.0.3
+ */
+let loaded_shaders = new Map();
+
+/**
  * The time it took to render/update last frame.
  * @type {DOMHighResTimeStamp}
  * @since 0.0.3
@@ -295,8 +302,36 @@ Selenium.RegisterRenderer = function(
 Selenium.RegisterLogicLine = function(
     logic_function) { logic_line = logic_function; };
 
-Selenium.RegisterShader = function(name) {
-    const shader = Selenium.Assets.LoadShader(render_target, name);
+/**
+ * Load a shader from its file and register it with the engine.
+ * @authors Sephelim
+ * @since 0.0.3
+ *
+ * @param {string} name The name of the shader's folder within assets >
+ *     shaders.
+ * @returns {Promise<boolean>} A flag representing the success state of the
+ *     shader's compilation.
+ */
+Selenium.RegisterShader = async function(name) {
+    const shader = await Selenium.Assets.LoadShader(render_target, name);
+    if (shader == null) return false;
+    loaded_shaders.set(name, shader);
+    return true;
+};
+
+/**
+ * Get a shader that has been loaded in the past.
+ * @authors Sephelim
+ * @since 0.0.3
+ *
+ * @param {string} name The name of the shader to get.
+ * @returns {WebGLProgram | null} The shader, or null if a shader with the
+ *     given name didn't exist.
+ */
+Selenium.GetShader = function(name) {
+    const shader = loaded_shaders.get(name);
+    if (shader == undefined) return null;
+    return shader;
 };
 
 // #endregion Namespace Declaration

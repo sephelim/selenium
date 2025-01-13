@@ -402,6 +402,8 @@ Selenium_Assets.LoadConfiguration = async function(type, name) {
  *     application.
  * @param {string} name The name of the shader. This is the folder searched
  *     for within the game assets > shaders folder.
+ * @returns {Promise<WebGLProgram | null>} The fully compiled shader
+ *     object, or null if an error occurred.
  */
 Selenium_Assets.LoadShader = async function(gl, name) {
     const base_path =
@@ -411,6 +413,7 @@ Selenium_Assets.LoadShader = async function(gl, name) {
 
     const vertex_file = await Selenium_Assets.LoadFile(vertex_path);
     const fragment_file = await Selenium_Assets.LoadFile(fragment_path);
+    Selenium_Logging.Log("Compiling shader '" + name + "'.");
     if (vertex_file == null || fragment_file == null) return null;
 
     let vertex_shader = gl.createShader(gl.VERTEX_SHADER);
@@ -420,48 +423,43 @@ Selenium_Assets.LoadShader = async function(gl, name) {
     gl.shaderSource(fragment_shader, await fragment_file.text());
 
     gl.compileShader(vertex_shader);
-    if (gl.getShaderParameter(vertex_shader, gl.COMPILE_STATUS) == true)
-        console.log("error?");
+    if (gl.getShaderParameter(vertex_shader, gl.COMPILE_STATUS) == false)
+    {
+        const info_log = gl.getShaderInfoLog(vertex_shader);
+        Selenium_Logging.Error(
+            "Failed to compile vertex shader:\n" + info_log);
+        return null;
+    }
+    Selenium_Logging.Success("Compiled vertex shader.");
 
-    // unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    // glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    // glCompileShader(vertexShader);
-    // // check for shader compile errors
-    // int success;
-    // char infoLog[512];
-    // glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    // if (!success)
-    // {
-    //     glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-    //     std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" <<
-    //     infoLog << std::endl;
-    // }
-    // // fragment shader
-    // unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    // glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    // glCompileShader(fragmentShader);
-    // // check for shader compile errors
-    // glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    // if (!success)
-    // {
-    //     glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-    //     std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" <<
-    //     infoLog << std::endl;
-    // }
-    // // link shaders
-    // unsigned int shaderProgram = glCreateProgram();
-    // glAttachShader(shaderProgram, vertexShader);
-    // glAttachShader(shaderProgram, fragmentShader);
-    // glLinkProgram(shaderProgram);
-    // // check for linking errors
-    // glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    // if (!success) {
-    //     glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-    //     std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" <<
-    //     infoLog << std::endl;
-    // }
-    // glDeleteShader(vertexShader);
-    // glDeleteShader(fragmentShader);
+    gl.compileShader(fragment_shader);
+    if (gl.getShaderParameter(fragment_shader, gl.COMPILE_STATUS) == false)
+    {
+        const info_log = gl.getShaderInfoLog(fragment_shader);
+        Selenium_Logging.Error(
+            "Failed to compile fragment shader:\n" + info_log);
+        return null;
+    }
+    Selenium_Logging.Success("Compiled fragment shader.");
+
+    let program = gl.createProgram();
+    gl.attachShader(program, vertex_shader);
+    gl.attachShader(program, fragment_shader);
+    gl.linkProgram(program);
+
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+    {
+        const info_log = gl.getProgramInfoLog(program);
+        Selenium_Logging.Error(
+            "Failed to link shader program:\n" + info_log);
+        return null;
+    }
+    Selenium_Logging.Success("Linked shader program.");
+
+    gl.deleteShader(vertex_shader);
+    gl.deleteShader(fragment_shader);
+
+    return program;
 };
 
 // #endregion Namespace Declaration
