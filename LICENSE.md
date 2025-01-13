@@ -1,3 +1,5 @@
+![top-banner](./.github/banner.jpg)
+
 # GNU AFFERO GENERAL PUBLIC LICENSE
 
 Version 3, 19 November 2007
@@ -658,3 +660,5 @@ You should also get your employer (if you work as a programmer) or
 school, if any, to sign a "copyright disclaimer" for the program, if
 necessary. For more information on this, and how to apply and follow
 the GNU AGPL, see <https://www.gnu.org/licenses/>.
+
+![bottom-banner](./.github/banner.jpg)

@@ -9,7 +9,7 @@
  * @copyright (c) 2025 the Selenium Development Team
  * This source file is under the AGPLv3. For information on what that
  * means, see the LICENSE.md file that should have been provided alongside
- * this project, or see https://www.gnu.org/licenses/agpl-3.0.md.
+ * this project, or https://www.gnu.org/licenses/agpl-3.0.md.
  */
 "use strict";
 
