@@ -21,6 +21,9 @@ import {Selenium_Data} from "./Framework/Data.js";
 import {Selenium_Logging} from "./Framework/Logging.js";
 import {Selenium_Utilities} from "./Framework/Utilities.js";
 
+import {Selenium_Graphics_Shaders} from "./Framework/Graphics/Shaders.js";
+import {gl, BindGL} from "./Framework/Graphics/GL.js";
+
 /**
  * @import {ConfigBody} from "./Framework/Assets.js"
  * @import {Renderer, LogicLine} from "./Framework/Data.js"
@@ -28,20 +31,6 @@ import {Selenium_Utilities} from "./Framework/Utilities.js";
 
 // #endregion Module Dependencies
 // #region Private Utilities
-
-/**
- * The target onto which all things are rendered.
- * @type {WebGL2RenderingContext}
- * @since 0.0.2
- */
-let render_target = null;
-
-/**
- * A hashmap of the loaded scenes keyed by their name.
- * @type {Map<string, WebGLProgram>}
- * @since 0.0.3
- */
-let loaded_shaders = new Map();
 
 /**
  * The time it took to render/update last frame.
@@ -202,7 +191,7 @@ function HandleFrame(time)
     }
     else frame_count++;
 
-    renderer(render_target);
+    renderer(gl);
     logic_line();
 
     requestAnimationFrame(HandleFrame);
@@ -227,9 +216,24 @@ Selenium.__proto__ = null;
 Selenium.Assets = Selenium_Assets;
 
 /**
- * The Selenium logging namespace. This provides logic for logging strings
- * to the console and pushing them into the log buffer, along with things
- * like stack traces.
+ * The Selenium graphics namespace. This provides all the functionality
+ * needed to render complex objects easily.
+ * @since 0.0.3
+ */
+Selenium.Graphics = Selenium.Graphics || {};
+Selenium.Graphics.__proto__ = null;
+
+/**
+ * The shader subnamespace of the graphics space. This provides
+ * functionality for loading and using shaders.
+ * @since 0.0.3
+ */
+Selenium.Graphics.Shaders = Selenium_Graphics_Shaders;
+
+/**
+ * The Selenium logging namespace. This provides logic for logging
+ * strings to the console and pushing them into the log buffer, along
+ * with things like stack traces.
  * @since 0.0.1
  */
 Selenium.Logging = Selenium_Logging;
@@ -262,11 +266,10 @@ Selenium.Start = async function() {
     await LoadGameDocuments();
     ConstructDocument();
 
-    // @ts-ignore This is a canvas element.
-    render_target = document.getElementById("view").getContext("webgl2");
+    BindGL();
     window.onresize = () => {
-        render_target.canvas.width = window.innerWidth;
-        render_target.canvas.height = window.innerHeight;
+        gl.canvas.width = window.innerWidth;
+        gl.canvas.height = window.innerHeight;
     };
 
     // Load in the game entry function and call it.
@@ -301,38 +304,6 @@ Selenium.RegisterRenderer = function(
  */
 Selenium.RegisterLogicLine = function(
     logic_function) { logic_line = logic_function; };
-
-/**
- * Load a shader from its file and register it with the engine.
- * @authors Sephelim
- * @since 0.0.3
- *
- * @param {string} name The name of the shader's folder within assets >
- *     shaders.
- * @returns {Promise<boolean>} A flag representing the success state of the
- *     shader's compilation.
- */
-Selenium.RegisterShader = async function(name) {
-    const shader = await Selenium.Assets.LoadShader(render_target, name);
-    if (shader == null) return false;
-    loaded_shaders.set(name, shader);
-    return true;
-};
-
-/**
- * Get a shader that has been loaded in the past.
- * @authors Sephelim
- * @since 0.0.3
- *
- * @param {string} name The name of the shader to get.
- * @returns {WebGLProgram | null} The shader, or null if a shader with the
- *     given name didn't exist.
- */
-Selenium.GetShader = function(name) {
-    const shader = loaded_shaders.get(name);
-    if (shader == undefined) return null;
-    return shader;
-};
 
 // #endregion Namespace Declaration
 // #region Module Exports
