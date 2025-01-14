@@ -398,14 +398,12 @@ Selenium_Assets.LoadConfiguration = async function(type, name) {
  * @authors Sephelim
  * @since 0.0.3
  *
- * @param {WebGL2RenderingContext} gl The WebGL rendering context of the
- *     application.
  * @param {string} name The name of the shader. This is the folder searched
  *     for within the game assets > shaders folder.
  * @returns {Promise<WebGLProgram | null>} The fully compiled shader
  *     object, or null if an error occurred.
  */
-Selenium_Assets.LoadShader = async function(gl, name) {
+Selenium_Assets.LoadShader = async function(name) {
     const base_path =
         Selenium_Data.GetAssetDirectory() + "/Shaders/" + name;
     const vertex_path = base_path + "/vertex.vs";
@@ -416,48 +414,48 @@ Selenium_Assets.LoadShader = async function(gl, name) {
     Selenium_Logging.Log("Compiling shader '" + name + "'.");
     if (vertex_file == null || fragment_file == null) return null;
 
-    let vertex_shader = gl.createShader(gl.VERTEX_SHADER);
-    let fragment_shader = gl.createShader(gl.FRAGMENT_SHADER);
+    let vertex_shader = GL.createShader(GL.VERTEX_SHADER);
+    let fragment_shader = GL.createShader(GL.FRAGMENT_SHADER);
 
-    gl.shaderSource(vertex_shader, await vertex_file.text());
-    gl.shaderSource(fragment_shader, await fragment_file.text());
+    GL.shaderSource(vertex_shader, await vertex_file.text());
+    GL.shaderSource(fragment_shader, await fragment_file.text());
 
-    gl.compileShader(vertex_shader);
-    if (gl.getShaderParameter(vertex_shader, gl.COMPILE_STATUS) == false)
+    GL.compileShader(vertex_shader);
+    if (GL.getShaderParameter(vertex_shader, GL.COMPILE_STATUS) == false)
     {
-        const info_log = gl.getShaderInfoLog(vertex_shader);
+        const info_log = GL.getShaderInfoLog(vertex_shader);
         Selenium_Logging.Error(
             "Failed to compile vertex shader:\n" + info_log);
         return null;
     }
     Selenium_Logging.Success("Compiled vertex shader.");
 
-    gl.compileShader(fragment_shader);
-    if (gl.getShaderParameter(fragment_shader, gl.COMPILE_STATUS) == false)
+    GL.compileShader(fragment_shader);
+    if (GL.getShaderParameter(fragment_shader, GL.COMPILE_STATUS) == false)
     {
-        const info_log = gl.getShaderInfoLog(fragment_shader);
+        const info_log = GL.getShaderInfoLog(fragment_shader);
         Selenium_Logging.Error(
             "Failed to compile fragment shader:\n" + info_log);
         return null;
     }
     Selenium_Logging.Success("Compiled fragment shader.");
 
-    let program = gl.createProgram();
-    gl.attachShader(program, vertex_shader);
-    gl.attachShader(program, fragment_shader);
-    gl.linkProgram(program);
+    let program = GL.createProgram();
+    GL.attachShader(program, vertex_shader);
+    GL.attachShader(program, fragment_shader);
+    GL.linkProgram(program);
 
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+    if (!GL.getProgramParameter(program, GL.LINK_STATUS))
     {
-        const info_log = gl.getProgramInfoLog(program);
+        const info_log = GL.getProgramInfoLog(program);
         Selenium_Logging.Error(
             "Failed to link shader program:\n" + info_log);
         return null;
     }
     Selenium_Logging.Success("Linked shader program.");
 
-    gl.deleteShader(vertex_shader);
-    gl.deleteShader(fragment_shader);
+    GL.deleteShader(vertex_shader);
+    GL.deleteShader(fragment_shader);
 
     return program;
 };

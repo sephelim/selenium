@@ -18,11 +18,9 @@
 
 import {Selenium_Assets} from "./Framework/Assets.js";
 import {Selenium_Data} from "./Framework/Data.js";
+import {Selenium_Graphics} from "./Framework/Graphics.js";
 import {Selenium_Logging} from "./Framework/Logging.js";
 import {Selenium_Utilities} from "./Framework/Utilities.js";
-
-import {Selenium_Graphics_Shaders} from "./Framework/Graphics/Shaders.js";
-import {gl, BindGL} from "./Framework/Graphics/GL.js";
 
 /**
  * @import {ConfigBody} from "./Framework/Assets.js"
@@ -191,7 +189,7 @@ function HandleFrame(time)
     }
     else frame_count++;
 
-    renderer(gl);
+    renderer(GL);
     logic_line();
 
     requestAnimationFrame(HandleFrame);
@@ -220,15 +218,7 @@ Selenium.Assets = Selenium_Assets;
  * needed to render complex objects easily.
  * @since 0.0.3
  */
-Selenium.Graphics = Selenium.Graphics || {};
-Selenium.Graphics.__proto__ = null;
-
-/**
- * The shader subnamespace of the graphics space. This provides
- * functionality for loading and using shaders.
- * @since 0.0.3
- */
-Selenium.Graphics.Shaders = Selenium_Graphics_Shaders;
+Selenium.Graphics = Selenium_Graphics;
 
 /**
  * The Selenium logging namespace. This provides logic for logging
@@ -266,10 +256,15 @@ Selenium.Start = async function() {
     await LoadGameDocuments();
     ConstructDocument();
 
-    BindGL();
+    const view_canvas = document.getElementById("view");
+    if (view_canvas instanceof HTMLCanvasElement)
+        Selenium.Graphics.GL = view_canvas.getContext("webgl2");
+    else Selenium.Logging.Panic("Missing view canvas!");
+    globalThis.GL = Selenium.Graphics.GL;
+
     window.onresize = () => {
-        gl.canvas.width = window.innerWidth;
-        gl.canvas.height = window.innerHeight;
+        GL.canvas.width = window.innerWidth;
+        GL.canvas.height = window.innerHeight;
     };
 
     // Load in the game entry function and call it.

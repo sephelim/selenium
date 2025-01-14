@@ -17,7 +17,6 @@
 // #region Module Dependencies
 
 import {Selenium_Assets} from "../Assets.js";
-import {gl} from "./GL.js";
 
 // #endregion Module Dependencies
 // #region Namespace Declarations
@@ -48,7 +47,7 @@ Selenium_Graphics_Shaders.Loaded = new Map();
  *     shader's compilation.
  */
 Selenium_Graphics_Shaders.Register = async function(name) {
-    const shader = await Selenium_Assets.LoadShader(gl, name);
+    const shader = await Selenium_Assets.LoadShader(name);
     if (shader == null) return false;
     Selenium_Graphics_Shaders.Loaded.set(name, shader);
     return true;
@@ -81,7 +80,7 @@ Selenium_Graphics_Shaders.Get = function(name) {
 Selenium_Graphics_Shaders.Use = function(name) {
     const shader = Selenium_Graphics_Shaders.Loaded.get(name);
     if (shader == undefined) return false;
-    gl.useProgram(shader);
+    GL.useProgram(shader);
     return true;
 };
 
