@@ -214,6 +214,13 @@ Selenium.__proto__ = null;
 Selenium.Assets = Selenium_Assets;
 
 /**
+ * Data about the engine and the game currently running. This contains
+ * things like title, log severity, and more.
+ * @since 0.0.2
+ */
+Selenium.Data = Selenium_Data;
+
+/**
  * The Selenium graphics namespace. This provides all the functionality
  * needed to render complex objects easily.
  * @since 0.0.3
@@ -234,13 +241,6 @@ Selenium.Logging = Selenium_Logging;
  * @since 0.0.1
  */
 Selenium.Utilities = Selenium_Utilities;
-
-/**
- * Data about the engine and the game currently running. This contains
- * things like title, log severity, and more.
- * @since 0.0.2
- */
-Selenium.Data = Selenium_Data;
 
 /**
  * Begin the engine's runtime. This loads all needed

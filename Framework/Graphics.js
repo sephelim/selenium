@@ -16,6 +16,7 @@
 
 // #region Module Dependencies
 
+import {Selenium_Graphics_Basic} from "./Graphics/Basic.js";
 import {Selenium_Graphics_Shaders} from "./Graphics/Shaders.js";
 
 // #endregion Module Dependencies
@@ -28,6 +29,21 @@ import {Selenium_Graphics_Shaders} from "./Graphics/Shaders.js";
  */
 var Selenium_Graphics = Selenium_Graphics || {};
 Selenium_Graphics.__proto__ = null;
+
+/**
+ * The basic rendering subnamespace of the graphics space.  This provides
+ * the ability to render a primitive shape like a rectangle sans any
+ * boilerplate.
+ * @since 0.0.4
+ */
+Selenium_Graphics.Basic = Selenium_Graphics_Basic;
+
+/**
+ * The shader subnamespace of the graphics space. This provides
+ * functionality for loading and using shaders.
+ * @since 0.0.3
+ */
+Selenium_Graphics.Shaders = Selenium_Graphics_Shaders;
 
 /**
  * The WebGL context for the engine, or null should one not have yet been
@@ -44,13 +60,6 @@ Selenium_Graphics.GL = null;
  * @since 0.0.3
  */
 globalThis.GL = null;
-
-/**
- * The shader subnamespace of the graphics space. This provides
- * functionality for loading and using shaders.
- * @since 0.0.3
- */
-Selenium_Graphics.Shaders = Selenium_Graphics_Shaders;
 
 /**
  * Clears the screen to a pure white.
