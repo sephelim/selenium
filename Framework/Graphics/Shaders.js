@@ -31,10 +31,43 @@ Selenium_Graphics_Shaders.__proto__ = null;
 
 /**
  * A hashmap of the loaded scenes keyed by their name.
- * @type {Map<string, WebGLProgram>}
+ * @type {Map<string, Shader>}
  * @since 0.0.3
  */
 Selenium_Graphics_Shaders.Loaded = new Map();
+
+/**
+ * A shader structure. This contains some information beyond the raw
+ * program, notably any already-grabbed shader uniforms.
+ * @since 0.0.3
+ */
+Selenium_Graphics_Shaders.Shader = class
+{
+    /**
+     * The underlying shader program.
+     * @type {WebGLProgram}
+     * @since 0.0.3
+     */
+    program;
+    /**
+     * Any already-grabbed shader uniform and attribute locations.
+     * @type {Map<string, WebGLUniformLocation | number>}
+     */
+    locations;
+
+    /**
+     * Create a new shader object.
+     * @authors Sephelim
+     * @since 0.0.3
+     *
+     * @param {WebGLProgram} program The already-loaded WebGL program.
+     */
+    constructor(program)
+    {
+        this.program = program;
+        this.locations = new Map();
+    }
+}
 
 /**
  * Load a shader from its file and register it with the engine.
@@ -49,7 +82,8 @@ Selenium_Graphics_Shaders.Loaded = new Map();
 Selenium_Graphics_Shaders.Register = async function(name) {
     const shader = await Selenium_Assets.LoadShader(name);
     if (shader == null) return false;
-    Selenium_Graphics_Shaders.Loaded.set(name, shader);
+    Selenium_Graphics_Shaders.Loaded.set(
+        name, new Selenium_Graphics_Shaders.Shader(shader));
     return true;
 };
 
@@ -59,8 +93,8 @@ Selenium_Graphics_Shaders.Register = async function(name) {
  * @since 0.0.3
  *
  * @param {string} name The name of the shader to get.
- * @returns {WebGLProgram | null} The shader, or null if a shader with the
- *     given name didn't exist.
+ * @returns {Shader | null} The shader, or null if a shader with the given
+ *     name didn't exist.
  */
 Selenium_Graphics_Shaders.Get = function(name) {
     const shader = Selenium_Graphics_Shaders.Loaded.get(name);
@@ -80,12 +114,97 @@ Selenium_Graphics_Shaders.Get = function(name) {
 Selenium_Graphics_Shaders.Use = function(name) {
     const shader = Selenium_Graphics_Shaders.Loaded.get(name);
     if (shader == undefined) return false;
-    GL.useProgram(shader);
+    GL.useProgram(shader.program);
+    return true;
+};
+
+/**
+ * Grab a uniform location from a given preloaded shader.
+ * @authors Sephelim
+ * @since 0.0.3
+ *
+ * @param {string} name The name of the shader to load from.
+ * @param {string} uniform_name The name of the uniform.
+ * @returns {WebGLUniformLocation | null} The uniform location, or null if
+ *     something went wrong (shader nonexistant, unknown uniform name,
+ *     etc).
+ */
+Selenium_Graphics_Shaders.GetUniform = function(name, uniform_name) {
+    const shader = Selenium_Graphics_Shaders.Loaded.get(name);
+    if (shader == undefined) return null;
+    const cached_location = shader.locations.get(uniform_name);
+    if (cached_location != undefined && cached_location instanceof
+                                            WebGLUniformLocation)
+        return cached_location;
+
+    const found_location =
+        GL.getUniformLocation(shader.program, uniform_name);
+    if (found_location == null) return null;
+    shader.locations.set(uniform_name, found_location);
+    return found_location;
+};
+
+/**
+ * Grab an attribute location from a given preloaded shader.
+ * @authors Sephelim
+ * @since 0.0.3
+ *
+ * @param {string} name The name of the shader to load from.
+ * @param {string} attribute_name The name of the attribute.
+ * @returns {number | null} The attribute location, or null if
+ *     something went wrong (shader nonexistant, unknown attribute name,
+ *     etc).
+ */
+Selenium_Graphics_Shaders.GetAttribute = function(name, attribute_name) {
+    const shader = Selenium_Graphics_Shaders.Loaded.get(name);
+    if (shader == undefined) return null;
+    const cached_location = shader.locations.get(attribute_name);
+    if (cached_location != undefined &&
+        typeof (cached_location) == "number")
+        return cached_location;
+
+    const found_location =
+        GL.getAttribLocation(shader.program, attribute_name);
+    if (found_location == null) return null;
+    shader.locations.set(attribute_name, found_location);
+    return found_location;
+};
+
+/**
+ * Set a uniform within the shader. Note that this system is incredibly
+ * rudimentary at the moment--it decides type based off of the first two
+ * letters of the uniform name.
+ * @authors Sephelim
+ * @since 0.0.3
+ *
+ * @param {string} name The name of the shader whose uniform we're setting.
+ * @param {string} uniform_name The string name of the uniform.
+ * @param {Iterable<GLfloat>} value The value to set the uniform to.
+ * @returns {boolean} A flag representing whether or not the operation
+ *     succeeded.
+ */
+Selenium_Graphics_Shaders.SetUniform = function(
+    name, uniform_name, value) {
+    const location =
+        Selenium_Graphics_Shaders.GetUniform(name, uniform_name);
+    if (location == null) return false;
+
+    const uniform_type = uniform_name.substring(0, 2);
+    switch (uniform_type)
+    {
+        case "m4": GL.uniformMatrix4fv(location, false, value); break;
+    }
+
     return true;
 };
 
 // #endregion Namespace Declarations
 // #region Module Exports
+
+/**
+ * @typedef {Selenium_Graphics_Shaders.Shader} Shader A shader object.
+ * @since 0.0.3
+ */
 
 export {Selenium_Graphics_Shaders};
 

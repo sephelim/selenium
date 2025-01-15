@@ -17,6 +17,7 @@
 // #region Module Dependencies
 
 import {Selenium_Graphics_Basic} from "./Graphics/Basic.js";
+import {Selenium_Graphics_Buffers} from "./Graphics/Buffers.js";
 import {Selenium_Graphics_Shaders} from "./Graphics/Shaders.js";
 
 // #endregion Module Dependencies
@@ -37,6 +38,8 @@ Selenium_Graphics.__proto__ = null;
  * @since 0.0.4
  */
 Selenium_Graphics.Basic = Selenium_Graphics_Basic;
+
+Selenium_Graphics.Buffers = Selenium_Graphics_Buffers;
 
 /**
  * The shader subnamespace of the graphics space. This provides
@@ -67,8 +70,9 @@ globalThis.GL = null;
  * @since 0.0.3
  */
 Selenium_Graphics.ClearScreen = function() {
-    GL.clear(GL.COLOR_BUFFER_BIT);
+    GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
     GL.clearColor(1.0, 1.0, 1.0, 1.0);
+    GL.clearDepth(1.0);
 };
 
 // #endregion Namespace Declaration

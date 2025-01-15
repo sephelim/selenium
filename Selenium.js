@@ -262,6 +262,9 @@ Selenium.Start = async function() {
     else Selenium.Logging.Panic("Missing view canvas!");
     globalThis.GL = Selenium.Graphics.GL;
 
+    GL.enable(GL.DEPTH_TEST);
+    GL.depthFunc(GL.LEQUAL);
+
     window.onresize = () => {
         GL.canvas.width = window.innerWidth;
         GL.canvas.height = window.innerHeight;
