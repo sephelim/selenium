@@ -16,11 +16,11 @@
 
 // #region Module Dependencies
 
-import {Selenium_Assets} from "./Framework/Assets.js";
-import {Selenium_Data} from "./Framework/Data.js";
-import {Selenium_Graphics} from "./Framework/Graphics.js";
-import {Selenium_Logging} from "./Framework/Logging.js";
-import {Selenium_Utilities} from "./Framework/Utilities.js";
+import { Selenium_Assets } from "./Framework/Assets.js";
+import { Selenium_Data } from "./Framework/Data.js";
+import { Selenium_Graphics } from "./Framework/Graphics.js";
+import { Selenium_Logging } from "./Framework/Logging.js";
+import { Selenium_Utilities } from "./Framework/Utilities.js";
 
 /**
  * @import {ConfigBody} from "./Framework/Assets.js"
@@ -56,14 +56,14 @@ let frame_count = 0;
  * @type {Renderer}
  * @since 0.0.3
  */
-let renderer = () => {};
+let renderer = () => { };
 
 /**
  * The game's logic line.
  * @type {LogicLine}
  * @since 0.0.3
  */
-let logic_line = () => {};
+let logic_line = () => { };
 
 /**
  * Enter all config data into the global data structure.
@@ -72,8 +72,7 @@ let logic_line = () => {};
  *
  * @param {ConfigBody} global_config The loaded global config.
  */
-function EnterGameData(global_config)
-{
+function EnterGameData(global_config) {
     const engine_section = global_config.get("Selenium");
     Selenium.Data.Mode = engine_section.get("mode")[0];
     const fatality_level = engine_section.get("fatality_level");
@@ -101,21 +100,18 @@ function EnterGameData(global_config)
  * @authors Sephelim
  * @since 0.0.2
  */
-async function LoadGameDocuments()
-{
+async function LoadGameDocuments() {
     Selenium.Logging.Log("Grabbing license and README.");
     const license_response = await Selenium.Assets.LoadFile("/LICENSE.md");
     const readme_response = await Selenium.Assets.LoadFile("/README.md");
 
-    if (license_response != null)
-    {
+    if (license_response != null) {
         Selenium.Data.License.body = await license_response.text();
         Selenium.Logging.Success("Found license.");
     }
     else Selenium.Logging.Panic("Missing license.");
     // We don't panic here because READMEs are not necessarily required.
-    if (readme_response != null)
-    {
+    if (readme_response != null) {
         Selenium.Data.Readme = await readme_response.text();
         Selenium.Logging.Success("Found README.");
     }
@@ -128,8 +124,7 @@ async function LoadGameDocuments()
  * @authors Sephelim
  * @since 0.0.2
  */
-function ConstructDocument()
-{
+function ConstructDocument() {
     document.head.innerHTML = `
         <!-- Site Metadata -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -137,14 +132,12 @@ function ConstructDocument()
         <!-- Document Metadata -->
         <meta name="generator" content="Selenium">
         <title>${Selenium.Data.Title.value}</title>
-        <meta name="application-name" content=${
-        Selenium.Data.GetShortTitle()}>
+        <meta name="application-name" content=${Selenium.Data.GetShortTitle()}>
         <meta name="author" content="${Selenium.Data.Author}">
         <meta name="description" content="${Selenium.Data.Description}">
         <meta name="keywords" content="${Selenium.Data.Keywords}">
         <!-- Resources -->
-        <link rel="icon" type="image/x-icon" href="/${
-        Selenium.Data.GetShortTitle()}_Assets/Icon.png">
+        <link rel="icon" type="image/x-icon" href="/${Selenium.Data.GetShortTitle()}_Assets/Icon.png">
         <style>
             body {
                 width: 100vw;
@@ -163,8 +156,7 @@ function ConstructDocument()
 
     document.body.innerHTML = `
         <!-- The render target. -->
-        <canvas id="view" width=${window.innerWidth} height=${
-        window.innerHeight}></canvas>
+        <canvas id="view" width=${window.innerWidth} height=${window.innerHeight}></canvas>
     `;
 }
 
@@ -176,13 +168,11 @@ function ConstructDocument()
  * @param {DOMHighResTimeStamp} time The time that the previous frame
  *     finished rendering.
  */
-function HandleFrame(time)
-{
+function HandleFrame(time) {
     Selenium.Data.Deltatime = time - last_frame_time;
     last_frame_time = time;
 
-    if (time - frame_batch_start > 1000)
-    {
+    if (time - frame_batch_start > 1000) {
         Selenium.Data.FPS = frame_count;
         frame_batch_start = time;
         frame_count = 0;
@@ -249,7 +239,7 @@ Selenium.Utilities = Selenium_Utilities;
  * @authors Sephelim
  * @since 0.0.2
  */
-Selenium.Start = async function() {
+Selenium.Start = async function () {
     const global_config =
         await Selenium.Assets.LoadConfiguration("global", "Game");
     EnterGameData(global_config.contents);
@@ -265,9 +255,7 @@ Selenium.Start = async function() {
     GL.enable(GL.DEPTH_TEST);
 
     window.onresize = () => {
-        GL.canvas.width = window.innerWidth;
-        GL.canvas.height = window.innerHeight;
-        GL.viewport(0, 0, window.innerWidth, window.innerHeight);
+        Selenium_Utilities.resizeCanvas();
     };
 
     // Load in the game entry function and call it.
@@ -289,7 +277,7 @@ Selenium.Start = async function() {
  *
  * @param {Renderer} render_function The render function.
  */
-Selenium.RegisterRenderer = function(
+Selenium.RegisterRenderer = function (
     render_function) { renderer = render_function; };
 
 /**
@@ -300,12 +288,12 @@ Selenium.RegisterRenderer = function(
  *
  * @param {LogicLine} logic_function The logic function.
  */
-Selenium.RegisterLogicLine = function(
+Selenium.RegisterLogicLine = function (
     logic_function) { logic_line = logic_function; };
 
 // #endregion Namespace Declaration
 // #region Module Exports
 
-export {Selenium};
+export { Selenium };
 
 // #endregion Module Exports
