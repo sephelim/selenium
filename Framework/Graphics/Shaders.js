@@ -177,9 +177,11 @@ Selenium_Graphics_Shaders.GetAttribute = function(name, attribute_name) {
  * @authors Sephelim
  * @since 0.0.3
  *
+ * @note This "use"s the given shader.
+ *
  * @param {string} name The name of the shader whose uniform we're setting.
  * @param {string} uniform_name The string name of the uniform.
- * @param {Iterable<GLfloat>} value The value to set the uniform to.
+ * @param {any} value The value to set the uniform to.
  * @returns {boolean} A flag representing whether or not the operation
  *     succeeded.
  */
@@ -189,6 +191,7 @@ Selenium_Graphics_Shaders.SetUniform = function(
         Selenium_Graphics_Shaders.GetUniform(name, uniform_name);
     if (location == null) return false;
 
+    Selenium_Graphics_Shaders.Use(name);
     const uniform_type = uniform_name.substring(0, 2);
     switch (uniform_type)
     {

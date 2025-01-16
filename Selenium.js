@@ -189,7 +189,7 @@ function HandleFrame(time)
     }
     else frame_count++;
 
-    renderer(GL);
+    renderer();
     logic_line();
 
     requestAnimationFrame(HandleFrame);
@@ -263,11 +263,11 @@ Selenium.Start = async function() {
     globalThis.GL = Selenium.Graphics.GL;
 
     GL.enable(GL.DEPTH_TEST);
-    GL.depthFunc(GL.LEQUAL);
 
     window.onresize = () => {
         GL.canvas.width = window.innerWidth;
         GL.canvas.height = window.innerHeight;
+        GL.viewport(0, 0, window.innerWidth, window.innerHeight);
     };
 
     // Load in the game entry function and call it.

@@ -140,8 +140,8 @@ Selenium_Data.GetAssetDirectory =
 // #region Module Exports
 
 /**
- * @typedef {function(WebGL2RenderingContext):void} Renderer A function
- * called every frame to render the game.
+ * @typedef {function():void} Renderer A function called every frame to
+ * render the game.
  * @since 0.0.3
  *
  * @typedef {function():void} LogicLine A function called every frame after
