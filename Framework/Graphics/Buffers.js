@@ -22,14 +22,19 @@ Selenium_Graphics_Buffers.__proto__ = null;
 /**
  *
  * @param {Float32Array} positions
- * @returns {WebGLBuffer}
+ * @returns {WebGLVertexArrayObject}
  */
 Selenium_Graphics_Buffers.CreateVertexObject = function(positions) {
-    const created_buffer = GL.createBuffer();
-    GL.bindBuffer(GL.ARRAY_BUFFER, created_buffer);
+    const vao = GL.createVertexArray();
+    GL.bindVertexArray(vao);
+
+    const vbo = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, vbo);
     GL.bufferData(GL.ARRAY_BUFFER, positions, GL.STATIC_DRAW);
 
-    return created_buffer;
+    //! THE BUFFER IS LEFT ORPHANED--FIX THIS!!
+
+    return vao;
 };
 
 // #endregion Namespace Declarations
