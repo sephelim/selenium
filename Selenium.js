@@ -222,6 +222,7 @@ function ResizeCallback()
         Selenium_Graphics.Projection,
         GLMatrix.Vec3.fromValues(150, 150, 0));
 
+    // Rotate 45 degrees around the X and Z axi.
     GLMatrix.Mat4.rotateX(Selenium_Graphics.Projection,
         Selenium_Graphics.Projection, GLMatrix.ToRadians(45));
     GLMatrix.Mat4.rotateZ(Selenium_Graphics.Projection,

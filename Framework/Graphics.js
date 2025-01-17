@@ -23,7 +23,7 @@ import {Selenium_Graphics_Shaders} from "./Graphics/Shaders.js";
 import {GLMatrix} from "../Dependencies/GLMatrix.js";
 
 /**
- * @import * as GLM from "../Dependencies/GLMatrix.js"
+ * @import {Mat4} from "../Dependencies/GLMatrix.js"
  */
 
 // #endregion Module Dependencies
@@ -71,7 +71,7 @@ Selenium_Graphics.GL = null;
  * The current projection matrix of the game. This is, by defaut, set in
  * the global resize method. To disable this behavior, set
  * Selenium_Graphics.CustomProjection to true.
- * @type {GLM.Mat4}
+ * @type {Mat4}
  * @since 0.0.4
  */
 Selenium_Graphics.Projection = GLMatrix.Mat4.create();
@@ -110,6 +110,10 @@ Selenium_Graphics.ClearScreen = function(r, g, b) {
 
 // #endregion Namespace Declaration
 // #region Module Exports
+
+/**
+ * @typedef {{r:GLclampf, g:GLclampf, b:GLclampf}} Color
+ */
 
 export {Selenium_Graphics};
 
