@@ -20,6 +20,8 @@ import {Selenium_Graphics_Basic} from "./Graphics/Basic.js";
 import {Selenium_Graphics_Buffers} from "./Graphics/Buffers.js";
 import {Selenium_Graphics_Shaders} from "./Graphics/Shaders.js";
 
+import {GLMatrix} from "../Dependencies/GLMatrix.js";
+
 // #endregion Module Dependencies
 // #region Namespace Declaration
 
@@ -56,6 +58,8 @@ Selenium_Graphics.Shaders = Selenium_Graphics_Shaders;
  */
 Selenium_Graphics.GL = null;
 
+Selenium_Graphics.Projection = GLMatrix.Mat4.create();
+
 /**
  * The WebGL context for the engine, or null should one not have yet been
  * bound.
@@ -65,14 +69,18 @@ Selenium_Graphics.GL = null;
 globalThis.GL = null;
 
 /**
- * Clears the screen to a pure white.
+ * Clears the screen to a pure color.
  * @authors Sephelim
  * @since 0.0.3
+ *
+ * @param {GLclampf} r The red component of the color to clear screen to.
+ * @param {GLclampf} g The green component of the color to clear screen to.
+ * @param {GLclampf} b The blue component of the color to clear screen to.
  */
-Selenium_Graphics.ClearScreen = function() {
-    GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
-    GL.clearColor(1.0, 1.0, 1.0, 1.0);
+Selenium_Graphics.ClearScreen = function(r, g, b) {
+    GL.clearColor(r, g, b, 1.0);
     GL.clearDepth(1.0);
+    GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 };
 
 // #endregion Namespace Declaration

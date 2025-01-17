@@ -31,18 +31,16 @@ Selenium_Utilities.__proto__ = null;
  */
 Selenium_Utilities.Regexes =
     new Map([["space", new RegExp(/^ +| +$| +(?= )/gm)]]);
+
 /**
- * A function to resize the canvas to fit the screen
- * @since 0.0.3
+ * The aspect ratio of the application.
+ * @since 0.0.4
  */
-Selenium_Utilities.resizeCanvas = function () {
-    GL.canvas.width = window.innerWidth;
-    GL.canvas.height = window.innerHeight;
-    GL.viewport(0, 0, window.innerWidth, window.innerHeight);
-}
+Selenium_Utilities.Aspect = 4 / 3;
+
 // #endregion Namespace Declaration
 // #region Module Exports
 
-export { Selenium_Utilities };
+export {Selenium_Utilities};
 
 // #endregion Module Exports
