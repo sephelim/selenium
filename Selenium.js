@@ -212,7 +212,7 @@ function ResizeCallback() {
         GLMatrix.Vec3.fromValues(150, 150, 0));
 
     GLMatrix.Mat4.rotateX(Selenium_Graphics.Projection,
-        Selenium_Graphics.Projection, GLMatrix.ToRadians(45));
+        Selenium_Graphics.Projection, GLMatrix.ToRadians(90 - 35.264));
     GLMatrix.Mat4.rotateZ(Selenium_Graphics.Projection,
         Selenium_Graphics.Projection, GLMatrix.ToRadians(45));
 

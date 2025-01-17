@@ -1,6 +1,6 @@
 /**
  * @file Graphics/Buffers.js
- * @authors Sephelim
+ * @authors Sephelim, Ian
  * @brief This file provides the vertex object and data buffer side of
  * graphics programming with Selenium. Included are functions that make it
  * incredibly ease to create a vertex object from an array of positions.
@@ -29,7 +29,7 @@ Selenium_Graphics_Buffers.__proto__ = null;
  * @param {Float32Array} positions
  * @returns {WebGLVertexArrayObject}
  */
-Selenium_Graphics_Buffers.CreateVertexObject = function(positions) {
+Selenium_Graphics_Buffers.CreateVertexObject = function (positions) {
     const vao = GL.createVertexArray();
     GL.bindVertexArray(vao);
 
@@ -45,6 +45,6 @@ Selenium_Graphics_Buffers.CreateVertexObject = function(positions) {
 // #endregion Namespace Declarations
 // #region Module Exports
 
-export {Selenium_Graphics_Buffers};
+export { Selenium_Graphics_Buffers };
 
 // #endregion Module Exports
