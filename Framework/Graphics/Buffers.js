@@ -16,6 +16,11 @@
 
 // #region Namespace Declarations
 
+/**
+ * The object buffer subnamespace of the graphics space. This provides
+ * logic for creating things like vertex objects.
+ * @since 0.0.3
+ */
 var Selenium_Graphics_Buffers = Selenium_Graphics_Buffers || {};
 Selenium_Graphics_Buffers.__proto__ = null;
 

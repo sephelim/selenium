@@ -22,6 +22,10 @@ import {Selenium_Graphics_Shaders} from "./Graphics/Shaders.js";
 
 import {GLMatrix} from "../Dependencies/GLMatrix.js";
 
+/**
+ * @import * as GLM from "../Dependencies/GLMatrix.js"
+ */
+
 // #endregion Module Dependencies
 // #region Namespace Declaration
 
@@ -41,6 +45,11 @@ Selenium_Graphics.__proto__ = null;
  */
 Selenium_Graphics.Basic = Selenium_Graphics_Basic;
 
+/**
+ * The object buffer subnamespace of the graphics space. This provides
+ * logic for creating things like vertex objects.
+ * @since 0.0.3
+ */
 Selenium_Graphics.Buffers = Selenium_Graphics_Buffers;
 
 /**
@@ -58,7 +67,23 @@ Selenium_Graphics.Shaders = Selenium_Graphics_Shaders;
  */
 Selenium_Graphics.GL = null;
 
+/**
+ * The current projection matrix of the game. This is, by defaut, set in
+ * the global resize method. To disable this behavior, set
+ * Selenium_Graphics.CustomProjection to true.
+ * @type {GLM.Mat4}
+ * @since 0.0.4
+ */
 Selenium_Graphics.Projection = GLMatrix.Mat4.create();
+
+/**
+ * A boolean flag representing whether or not a custom projection is set as
+ * the current one. This disabled certain things, like automatic
+ * recalculation on window resize.
+ * @type {boolean}
+ * @since 0.0.4
+ */
+Selenium_Graphics.CustomProjection = false;
 
 /**
  * The WebGL context for the engine, or null should one not have yet been

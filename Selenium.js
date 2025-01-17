@@ -197,6 +197,40 @@ function HandleFrame(time)
     requestAnimationFrame(HandleFrame);
 }
 
+/**
+ * The callback triggered each time the window is resized. This does things
+ * like recalculate the viewport.
+ * @authors Sephelim
+ * @since 0.0.4
+ */
+function ResizeCallback()
+{
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    GL.canvas.width = width;
+    GL.canvas.height = height;
+    GL.viewport(0, 0, width, height);
+
+    // Only re-calculate the projection matrix if it's not custom.
+    if (Selenium_Graphics.CustomProjection == true) return;
+
+    GLMatrix.Mat4.ortho(
+        Selenium_Graphics.Projection, 0, width, height, 0, -100, 100);
+
+    GLMatrix.Mat4.translate(Selenium_Graphics.Projection,
+        Selenium_Graphics.Projection,
+        GLMatrix.Vec3.fromValues(150, 150, 0));
+
+    GLMatrix.Mat4.rotateX(Selenium_Graphics.Projection,
+        Selenium_Graphics.Projection, GLMatrix.ToRadians(45));
+    GLMatrix.Mat4.rotateZ(Selenium_Graphics.Projection,
+        Selenium_Graphics.Projection, GLMatrix.ToRadians(45));
+
+    GLMatrix.Mat4.scale(Selenium_Graphics.Projection,
+        Selenium_Graphics.Projection, GLMatrix.Vec3.fromValues(1, 1, 1));
+}
+
 // #endregion Private Utilities
 // #region Namespace Declaration
 
@@ -265,32 +299,6 @@ Selenium.Start = async function() {
     globalThis.GL = Selenium.Graphics.GL;
 
     GL.enable(GL.DEPTH_TEST);
-
-    function ResizeCallback()
-    {
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-        GL.canvas.width = width;
-        GL.canvas.height = height;
-        GL.viewport(0, 0, width, height);
-
-        // Re-calculate the projection matrix.
-        GLMatrix.Mat4.ortho(Selenium_Graphics.Projection, 0.0,
-            window.innerWidth, window.innerHeight, 0.0, 0, 400.0);
-
-        GLMatrix.Mat4.translate(Selenium_Graphics.Projection,
-            Selenium_Graphics.Projection,
-            GLMatrix.Vec3.fromValues(150, 150, -150));
-
-        GLMatrix.Mat4.rotateX(Selenium_Graphics.Projection,
-            Selenium_Graphics.Projection, GLMatrix.ToRadians(45));
-        GLMatrix.Mat4.rotateZ(Selenium_Graphics.Projection,
-            Selenium_Graphics.Projection, GLMatrix.ToRadians(45));
-
-        GLMatrix.Mat4.scale(Selenium_Graphics.Projection,
-            Selenium_Graphics.Projection,
-            GLMatrix.Vec3.fromValues(1, 1, 1));
-    }
 
     window.onresize = () => { ResizeCallback() };
     ResizeCallback();

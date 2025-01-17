@@ -8265,5 +8265,19 @@ GLMatrix.Vec2 = vec2;
 GLMatrix.Vec3 = vec3;
 GLMatrix.Vec4 = vec4;
 
+/**
+ * @typedef {typeof GLMatrix.Mat2} Mat2 A 2x2 matrix.
+ * @typedef {typeof GLMatrix.Mat2D} Mat2D A 2x3 matrix.
+ * @typedef {typeof GLMatrix.Mat3} Mat3 A 3x3 matrix.
+ * @typedef {typeof GLMatrix.Mat4} Mat4 A 4x4 matrix.
+ *
+ * @typedef {typeof GLMatrix.Quat} Quat A quaternion.
+ * @typedef {typeof GLMatrix.Quat2} Quat2 A quaternion. (??)
+ *
+ * @typedef {typeof GLMatrix.Vec2} Vec2 An (x, y) vector.
+ * @typedef {typeof GLMatrix.Vec3} Vec3 An (x, y, z) vector.
+ * @typedef {typeof GLMatrix.Vec4} Vec4 An (x, y, z, w) vector.
+ */
+
 export {GLMatrix};
 
