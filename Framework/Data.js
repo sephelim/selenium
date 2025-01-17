@@ -141,7 +141,7 @@ Selenium_Data.GetAssetDirectory =
  * @type {boolean}
  * @since 0.0.4
  */
-Selenium_Data.debugging = false;
+Selenium_Data.debugging = true;
 
 // #endregion Namespace Declaration
 // #region Module Exports
