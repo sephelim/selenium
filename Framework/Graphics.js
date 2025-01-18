@@ -113,6 +113,7 @@ Selenium_Graphics.ClearScreen = function(r, g, b) {
 
 /**
  * @typedef {{r:GLclampf, g:GLclampf, b:GLclampf}} Color
+ * @typedef {{x:number, y:number, z:number}} Position
  */
 
 export {Selenium_Graphics};

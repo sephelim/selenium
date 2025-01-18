@@ -2,8 +2,8 @@
  * @file Graphics/Basic.js
  * @authors Sephelim
  * @brief This file provides the basic shape rendering side of graphics
- * programming with Selenium. Provides are vertex buffers and shaders built
- * only to render primitives like squares.
+ * programming with Selenium. Provides are definitions of interfaces built
+ * to describe things like cubes and pyraminds.
  * @since 0.0.4
  *
  * @license AGPLv3
@@ -22,7 +22,8 @@ import {Selenium_Graphics_Shaders} from "./Shaders.js";
 import {GLMatrix} from "../../Dependencies/GLMatrix.js";
 
 /**
- * @import {Color} from "../Graphics.js"
+ * @import {Mat4, Vec3} from "../../Dependencies/GLMatrix.js"
+ * @import {Position, Color} from "../Graphics.js"
  */
 
 // #endregion Module Dependencies
@@ -37,111 +38,224 @@ import {GLMatrix} from "../../Dependencies/GLMatrix.js";
 var Selenium_Graphics_Basic = Selenium_Graphics_Basic || {};
 Selenium_Graphics_Basic.__proto__ = null;
 
-Selenium_Graphics_Basic.Cube = class
+Selenium_Graphics_Basic.Model = class
 {
-    vertex_object;
-    vertex_buffer;
-    vertex_indices;
-    model_matrix;
+    /**
+     * The vertex array object (VAO) of the model. This is basically one
+     * big list of every vertex within the shape. This is not explicitly
+     * constructed in the constructor, and should be created by child
+     * classes.
+     * @type {WebGLVertexArrayObject}
+     * @since 0.0.4
+     */
+    vao = null;
+    /**
+     * The vertex buffer object (VBO) of the model. This defines how the
+     * vertex list is laid out; the size of each vertex element, the data
+     * held within it and in what order its held in, etcetera. This is not
+     * explicitly constructed in the constructor, and should be created by
+     * child classes.
+     * @type {WebGLBuffer}
+     * @since 0.0.4
+     */
+    vbo = null;
+    /**
+     * The element buffer object (EBO) of the model. This is defined so we
+     * don't have to repeat exact same vertices over and over for the sake
+     * of overlapping vertices. This is a list of what index into the VAO
+     * the vertex at that position is represented by. This is not
+     * explicitly constructed in the constructor, and should be created by
+     * child classes.
+     * @type {WebGLBuffer}
+     * @since 0.0.4
+     */
+    ebo = null;
+    /**
+     * The model transform matrix. This defines things like rotation,
+     * position, etcetera.
+     * @type {Mat4}
+     * @since 0.0.4
+     */
+    transform;
+    /**
+     * The model's color. This is applied to every vertex globally.
+     * Vertices given a texture will have this color mixed overtop of said
+     * texture.
+     * @type {Vec3}
+     * @since 0.0.4
+     */
+    color;
 
-    constructor(position = {x: 0, y: 0, z: 0}, scale = 40,
-        color = {r: 255, g: 0, b: 0})
+    /**
+     * Create a new basic model.
+     * @authors Sephelim
+     * @since 0.0.4
+     *
+     * @param {Position} position The initial position of the model.
+     * @param {Color} color The initial color of the model.
+     */
+    constructor(position, color)
     {
-        const buffers = Selenium_Graphics_Buffers.CreateModelObject(
-            new Float32Array([
-                // clang-format off
-                scale,     scale,     0.0, color.r, color.g, color.b,
-                0.0,       scale,     0.0, color.r, color.g, color.b,
-                scale,     0.0,       0.0, color.r, color.g, color.b,
-                0.0,       0.0,       0.0, color.r, color.g, color.b,
-                scale,     scale * 2, 0.0, color.r, color.g, color.b,
-                scale * 2, scale * 2, 0.0, color.r, color.g, color.b,
-                scale * 2, scale, 0.0, color.r, color.g, color.b,
-                // clang-format on
-            ]),
-            new Uint32Array(
-                [0, 1, 2, 3, 2, 1, 1, 4, 0, 0, 4, 5, 5, 6, 0, 0, 6, 2]));
+        this.transform = GLMatrix.Mat4.create();
+        GLMatrix.Mat4.fromTranslation(this.transform,
+            GLMatrix.Vec3.fromValues(position.x, position.y, position.z));
+        this.color = GLMatrix.Vec3.fromValues(color.r, color.g, color.b);
+    }
 
-        //! create index buffer
-        this.vertex_object = buffers[0];
-        this.vertex_buffer = buffers[1];
-        this.vertex_indices = buffers[2];
+    /**
+     * Destroy all allocated memory within the model. This effectively
+     * makes the model useless from a rendering standpoint, and it is up to
+     * the user to not render the object post-deletion.
+     * @authors Sephelim
+     * @since 0.0.4
+     */
+    Destroy()
+    {
+        GL.deleteBuffer(this.ebo);
+        GL.deleteBuffer(this.vbo);
+        GL.deleteVertexArray(this.vao);
+        delete this.ebo;
+        delete this.vbo;
+        delete this.vao;
 
-        // Align our vertex buffer properly so the shade can understand it.
-        GL.vertexAttribPointer(0, 3, GL.FLOAT, false, 24, 0);
-        GL.enableVertexAttribArray(0);
-        GL.vertexAttribPointer(1, 3, GL.FLOAT, false, 24, 12);
-        GL.enableVertexAttribArray(1);
-        GL.bindBuffer(GL.ARRAY_BUFFER, null);
+        delete this.transform;
+        delete this.color;
+    }
 
-        this.model_matrix = GLMatrix.Mat4.create();
-        GLMatrix.Mat4.fromTranslation(this.model_matrix,
+    /**
+     * Move the model.
+     * @authors Sephelim
+     * @since 0.0.4
+     *
+     * @param {Position} position The amount to move the model.
+     */
+    Move(position)
+    {
+        GLMatrix.Mat4.translate(this.transform, this.transform,
             GLMatrix.Vec3.fromValues(position.x, position.y, position.z));
     }
 
-    Move(x, y = 0, z = 0) {}
-
-    Rotate(angle) {}
-
-    Destroy()
+    /**
+     * Recolor the model.
+     * @authors Sephelim
+     * @since 0.0.4
+     *
+     * @param {Color} color The new color for the model.
+     */
+    Dye(color)
     {
-        GL.deleteBuffer(this.vertex_indices);
-        GL.deleteBuffer(this.vertex_buffer);
-        GL.deleteVertexArray(this.vertex_object);
+        this.color = GLMatrix.Vec3.fromValues(color.r, color.g, color.b);
     }
 
-    Render(shader)
+    /**
+     * Render the model.
+     * @authors Sephelim
+     * @since 0.0.4
+     *
+     * @protected This method is technically still public, but should not
+     * be used outside of child classes.
+     *
+     * @param {string} shader The shader to render the model with.
+     * @param {number} index_count The count of indices contained within
+     *     the EBO.
+     */
+    _Render(shader, index_count)
     {
-        Selenium_Graphics_Shaders.Use(shader);
-        GL.bindVertexArray(this.vertex_object);
+        if (!Selenium_Graphics_Shaders.Use(shader)) return;
+        GL.bindVertexArray(this.vao);
+
         Selenium_Graphics_Shaders.SetUniform(
-            shader, "m4_model_matrix", this.model_matrix);
-        GL.drawElements(GL.TRIANGLES, 18, GL.UNSIGNED_INT, 0);
+            shader, "m4_model_matrix", this.transform);
+        Selenium_Graphics_Shaders.SetUniform(
+            shader, "v3_model_color", this.color);
+
+        GL.drawElements(GL.TRIANGLES, index_count, GL.UNSIGNED_INT, 0);
     }
-};
+}
 
 /**
- *
- * @param {TileOrientation} orientation
- * @param {number} scale
- * @param {Color} color
- * @returns {WebGLVertexArrayObject}
+ * A "cube." Because of the isometric nature of Selenium, it does not
+ * support rotation in 3D space, and therefore to save memory on the faces
+ * of the cube possibly facing the player are defined.
+ * @since 0.0.4
  */
-Selenium_Graphics_Basic.CreateTile = function(orientation, scale, color) {
-    const size = 1.0 * scale;
-    switch (orientation)
+Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
+{
+    /**
+     * Create a new cube model.
+     * @authors Sephelim
+     * @since 0.0.4
+     *
+     * @param {Position} position The initial position of the cube in
+     *     relation to the origin.
+     * @param {number} scale The scale of the cube.
+     * @param {Color} color The color to dye the cube.
+     */
+    constructor(position = {x: 0, y: 0, z: 0}, scale = 40,
+        color = {r: 255, g: 0, b: 0})
     {
-        case "up":
-            const up_object = [
-                size, size, 0.0, color.r, color.g, color.b, // top right
-                0.0, size, 0.0, color.r, color.g, color.b,  // top left
-                size, 0.0, 0.0, color.r, color.g, color.b,  // bottom right
-                0.0, 0.0, 0.0, color.r, color.g, color.b,   // bottom left
-                size, 0.0, 0.0, color.r, color.g, color.b,  // bottom right
-                0.0, size, 0.0, color.r, color.g, color.b   // top left
-            ];
-            return Selenium_Graphics_Buffers.CreateVertexObject(
-                new Float32Array(up_object));
-        case "left":
-            const left_object = [
-                size, size, 0.0, color.r, color.g, color.b, // top right
-                0.0, size, 0.0, color.r, color.g, color.b,  // top left
-                size, 0.0, 0.0, color.r, color.g, color.b,  // bottom right
-                0.0, 0.0, 0.0, color.r, color.g, color.b,   // bottom left
-                0.0, 0.0, 0.0, color.r, color.g, color.b,   // bottom right
-                0.0, size, 0.0, color.r, color.g, color.b   // top left
-            ];
-            return Selenium_Graphics_Buffers.CreateVertexObject(
-                new Float32Array(left_object));
+        super(position, color);
+
+        // Clang-Format makes arrays HIDEOUS.
+        // clang-format off
+        const buffers = Selenium_Graphics_Buffers.CreateModelObject(
+            // VAO
+            new Float32Array([
+                scale,     scale,     0.0, // (x, y, z)
+                0.0,       scale,     0.0,
+                scale,     0.0,       0.0,
+                0.0,       0.0,       0.0,
+                scale,     scale * 2, 0.0,
+                scale * 2, scale * 2, 0.0,
+                scale * 2, scale,     0.0
+            ]),
+            // EBO
+            new Uint32Array([
+                1, 0, 2, // (v1, v2, v3)
+                1, 2, 3,
+                1, 4, 0,
+                0, 4, 5,
+                5, 6, 0,
+                0, 6, 2
+            ])
+        );
+        // clang-format on
+
+        this.vao = buffers[0];
+        this.vbo = buffers[1];
+        this.ebo = buffers[2];
+
+        // This corresponds to `layout(location = 0) in vec4 position`
+        // within the shader.
+        GL.vertexAttribPointer(0, 3, GL.FLOAT, false, 0, 0);
+        GL.enableVertexAttribArray(0);
+
+        // Make sure none of our objects bleed into the global rendering
+        // scope on accident.
+        GL.bindBuffer(GL.ARRAY_BUFFER, null);
+        GL.bindVertexArray(null);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
     }
+
+    /**
+     * Render the cube. This does not check internal cube state, if the
+     * cube's been destroyed this call will generate many warnings.
+     * @authors Sephelim
+     * @since 0.0.4
+     *
+     * @note The given shader must have vertex locations taken as a vec3 of
+     * floats in attribute location 0, and two uniforms, a 4x4 matrix for
+     * the model transformation and a three component vector for color,
+     * "model_matrix" and "model_color" respectively.
+     *
+     * @param {string} shader The shader to render with. If this shader
+     *     isn't real, this function will return without operation.
+     */
+    Render(shader) { this._Render(shader, 18); }
 };
 
 // #endregion Namespace Declaration
 // #region Module Exports
-
-/**
- * @typedef {"up" | "left"} TileOrientation
- */
 
 export {Selenium_Graphics_Basic};
 

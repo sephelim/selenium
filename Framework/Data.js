@@ -127,21 +127,14 @@ Selenium_Data.FPS = 0;
  * @returns {string} Either the long or short title, depending on if the
  *     short title's been set.
  */
-Selenium_Data.GetShortTitle = function () {
+Selenium_Data.GetShortTitle = function() {
     if (Selenium_Data.Title.short != null)
         return Selenium_Data.Title.short;
     return Selenium_Data.Title.value;
 };
 
 Selenium_Data.GetAssetDirectory =
-    function () { return Selenium_Data.GetShortTitle() + "_Assets"; };
-
-/**
- * setting to true will enable debugging mode
- * @type {boolean}
- * @since 0.0.4
- */
-Selenium_Data.debugging = true;
+    function() { return Selenium_Data.GetShortTitle() + "_Assets"; };
 
 // #endregion Namespace Declaration
 // #region Module Exports
@@ -156,6 +149,6 @@ Selenium_Data.debugging = true;
  * @since 0.0.3
  */
 
-export { Selenium_Data };
+export {Selenium_Data};
 
 // #endregion Module Exports

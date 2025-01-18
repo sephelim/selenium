@@ -196,6 +196,7 @@ Selenium_Graphics_Shaders.SetUniform = function(
     switch (uniform_type)
     {
         case "m4": GL.uniformMatrix4fv(location, false, value); break;
+        case "v3": GL.uniform3fv(location, value); break;
     }
 
     return true;
