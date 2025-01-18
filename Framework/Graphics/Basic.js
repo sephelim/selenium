@@ -158,8 +158,9 @@ Selenium_Graphics_Basic.Model = class
      * @param {string} shader The shader to render the model with.
      * @param {number} index_count The count of indices contained within
      *     the EBO.
+     * @param {GLenum} mode The mode to render in.
      */
-    _Render(shader, index_count)
+    _Render(shader, index_count, mode)
     {
         if (!Selenium_Graphics_Shaders.Use(shader)) return;
         GL.bindVertexArray(this.vao);
@@ -169,7 +170,7 @@ Selenium_Graphics_Basic.Model = class
         Selenium_Graphics_Shaders.SetUniform(
             shader, "v3_model_color", this.color);
 
-        GL.drawElements(GL.TRIANGLES, index_count, GL.UNSIGNED_INT, 0);
+        GL.drawElements(mode, index_count, GL.UNSIGNED_INT, 0);
     }
 }
 
@@ -198,7 +199,7 @@ Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
 
         // Clang-Format makes arrays HIDEOUS.
         // clang-format off
-        const buffers = Selenium_Graphics_Buffers.CreateModelObject(
+        const buffers = Selenium_Graphics_Buffers.MO(
             // VAO
             new Float32Array([
                 scale,     scale,     0.0, // (x, y, z)
@@ -251,7 +252,7 @@ Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
      * @param {string} shader The shader to render with. If this shader
      *     isn't real, this function will return without operation.
      */
-    Render(shader) { this._Render(shader, 18); }
+    Render(shader) { this._Render(shader, 18, GL.TRIANGLES); }
 };
 
 // #endregion Namespace Declaration

@@ -29,7 +29,7 @@ Selenium_Graphics_Buffers.__proto__ = null;
  * @param {Float32Array} positions
  * @returns {[WebGLVertexArrayObject, WebGLBuffer]}
  */
-Selenium_Graphics_Buffers.CreateVertexObject = function(positions) {
+Selenium_Graphics_Buffers.VO = function(positions) {
     const vao = GL.createVertexArray();
     GL.bindVertexArray(vao);
 
@@ -42,8 +42,7 @@ Selenium_Graphics_Buffers.CreateVertexObject = function(positions) {
     return [vao, vbo];
 };
 
-Selenium_Graphics_Buffers.CreateModelObject = function(
-    positions, indices) {
+Selenium_Graphics_Buffers.MO = function(positions, indices) {
     const vao = GL.createVertexArray();
     GL.bindVertexArray(vao);
 
