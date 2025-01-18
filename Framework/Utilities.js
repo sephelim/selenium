@@ -32,12 +32,6 @@ Selenium_Utilities.__proto__ = null;
 Selenium_Utilities.Regexes =
     new Map([["space", new RegExp(/^ +| +$| +(?= )/gm)]]);
 
-/**
- * The aspect ratio of the application.
- * @since 0.0.4
- */
-Selenium_Utilities.Aspect = 4 / 3;
-
 // #endregion Namespace Declaration
 // #region Module Exports
 
