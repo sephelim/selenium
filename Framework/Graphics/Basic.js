@@ -41,38 +41,38 @@ Selenium_Graphics_Basic.Cube = class
 {
     vertex_object;
     vertex_buffer;
+    vertex_indices;
     model_matrix;
 
     constructor(position = {x: 0, y: 0, z: 0}, scale = 40,
         color = {r: 255, g: 0, b: 0})
     {
-        const buffers =
-            Selenium_Graphics_Buffers.CreateVertexObject(new Float32Array([
+        const buffers = Selenium_Graphics_Buffers.CreateModelObject(
+            new Float32Array([
                 // clang-format off
-                scale, scale, 0.0,     color.r, color.g, color.b, // t right
-                0.0, scale, 0.0,       color.r, color.g, color.b, // t left
-                scale, 0.0, 0.0,       color.r, color.g, color.b, // b right
-                0.0, 0.0, 0.0,         color.r, color.g, color.b, // b left
-                scale, 0.0, 0.0,       color.r, color.g, color.b, // b right
-                0.0, scale, 0.0,       color.r, color.g, color.b, // t left
-                scale, scale, 0.0,     0.0, 1.0, 0.0,             // g
-                0.0, scale, -scale*1.25, 1.0, 0.0, 0.0,             // r
-                0.0, scale, 0.0,       1.0, 1.0, 0.0,             // y
-                scale, scale, -scale*1.25,   0.0, 0.0, 1.0,             // b
-                0.0, scale, -scale*1.25,      0.0, 1.0, 1.0,             // c
-                scale, scale, 0.0,      1.0, 0.0, 1.0,             // p
+                scale,     scale,     0.0, color.r, color.g, color.b,
+                0.0,       scale,     0.0, color.r, color.g, color.b,
+                scale,     0.0,       0.0, color.r, color.g, color.b,
+                0.0,       0.0,       0.0, color.r, color.g, color.b,
+                scale,     scale * 2, 0.0, color.r, color.g, color.b,
+                scale * 2, scale * 2, 0.0, color.r, color.g, color.b,
+                scale * 2, scale, 0.0, color.r, color.g, color.b,
                 // clang-format on
-            ]));
+            ]),
+            new Uint32Array(
+                [0, 1, 2, 3, 2, 1, 1, 4, 0, 0, 4, 5, 5, 6, 0, 0, 6, 2]));
 
         //! create index buffer
         this.vertex_object = buffers[0];
         this.vertex_buffer = buffers[1];
+        this.vertex_indices = buffers[2];
 
         // Align our vertex buffer properly so the shade can understand it.
         GL.vertexAttribPointer(0, 3, GL.FLOAT, false, 24, 0);
         GL.enableVertexAttribArray(0);
         GL.vertexAttribPointer(1, 3, GL.FLOAT, false, 24, 12);
         GL.enableVertexAttribArray(1);
+        GL.bindBuffer(GL.ARRAY_BUFFER, null);
 
         this.model_matrix = GLMatrix.Mat4.create();
         GLMatrix.Mat4.fromTranslation(this.model_matrix,
@@ -85,6 +85,7 @@ Selenium_Graphics_Basic.Cube = class
 
     Destroy()
     {
+        GL.deleteBuffer(this.vertex_indices);
         GL.deleteBuffer(this.vertex_buffer);
         GL.deleteVertexArray(this.vertex_object);
     }
@@ -95,7 +96,7 @@ Selenium_Graphics_Basic.Cube = class
         GL.bindVertexArray(this.vertex_object);
         Selenium_Graphics_Shaders.SetUniform(
             shader, "m4_model_matrix", this.model_matrix);
-        GL.drawArrays(GL.TRIANGLES, 0, 12);
+        GL.drawElements(GL.TRIANGLES, 18, GL.UNSIGNED_INT, 0);
     }
 };
 

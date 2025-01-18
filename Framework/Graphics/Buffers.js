@@ -25,11 +25,11 @@ var Selenium_Graphics_Buffers = Selenium_Graphics_Buffers || {};
 Selenium_Graphics_Buffers.__proto__ = null;
 
 /**
- *
+ * you are repsonsible for configuring layout
  * @param {Float32Array} positions
  * @returns {[WebGLVertexArrayObject, WebGLBuffer]}
  */
-Selenium_Graphics_Buffers.CreateVertexObject = function (positions) {
+Selenium_Graphics_Buffers.CreateVertexObject = function(positions) {
     const vao = GL.createVertexArray();
     GL.bindVertexArray(vao);
 
@@ -42,9 +42,25 @@ Selenium_Graphics_Buffers.CreateVertexObject = function (positions) {
     return [vao, vbo];
 };
 
+Selenium_Graphics_Buffers.CreateModelObject = function(
+    positions, indices) {
+    const vao = GL.createVertexArray();
+    GL.bindVertexArray(vao);
+
+    const vbo = GL.createBuffer();
+    GL.bindBuffer(GL.ARRAY_BUFFER, vbo);
+    GL.bufferData(GL.ARRAY_BUFFER, positions, GL.STATIC_DRAW);
+
+    const ebo = GL.createBuffer();
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, ebo);
+    GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, indices, GL.STATIC_DRAW);
+
+    return [vao, vbo, ebo];
+};
+
 // #endregion Namespace Declarations
 // #region Module Exports
 
-export { Selenium_Graphics_Buffers };
+export {Selenium_Graphics_Buffers};
 
 // #endregion Module Exports
