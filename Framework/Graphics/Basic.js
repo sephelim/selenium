@@ -208,7 +208,7 @@ Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
                 0.0,       0.0,       0.0,
                 scale,     scale * 2, 0.0,
                 scale * 2, scale * 2, 0.0,
-                scale * 2, scale,     0.0
+                scale * 2, scale,     0.0,
             ]),
             // EBO
             new Uint32Array([
@@ -228,7 +228,7 @@ Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
 
         // This corresponds to `layout(location = 0) in vec4 position`
         // within the shader.
-        GL.vertexAttribPointer(0, 3, GL.FLOAT, false, 0, 0);
+        GL.vertexAttribPointer(0, 3, GL.FLOAT, false, 12, 0);
         GL.enableVertexAttribArray(0);
 
         // Make sure none of our objects bleed into the global rendering
