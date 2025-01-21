@@ -37,11 +37,15 @@ Selenium_Graphics_Buffers.VO = function(positions) {
     GL.bindBuffer(GL.ARRAY_BUFFER, vbo);
     GL.bufferData(GL.ARRAY_BUFFER, positions, GL.STATIC_DRAW);
 
-    //! THE BUFFER IS LEFT ORPHANED--FIX THIS!!
-
     return [vao, vbo];
 };
 
+/**
+ *
+ * @param {Float32Array} positions
+ * @param {Uint32Array} indices
+ * @returns
+ */
 Selenium_Graphics_Buffers.MO = function(positions, indices) {
     const vao = GL.createVertexArray();
     GL.bindVertexArray(vao);

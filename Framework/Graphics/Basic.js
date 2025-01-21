@@ -45,8 +45,10 @@ Selenium_Graphics_Basic.Model = class
      * big list of every vertex within the shape. This is not explicitly
      * constructed in the constructor, and should be created by child
      * classes.
+     *
      * @type {WebGLVertexArrayObject}
      * @since 0.0.4
+     * @protected
      */
     vao = null;
     /**
@@ -55,8 +57,10 @@ Selenium_Graphics_Basic.Model = class
      * held within it and in what order its held in, etcetera. This is not
      * explicitly constructed in the constructor, and should be created by
      * child classes.
+     *
      * @type {WebGLBuffer}
      * @since 0.0.4
+     * @protected
      */
     vbo = null;
     /**
@@ -66,23 +70,29 @@ Selenium_Graphics_Basic.Model = class
      * the vertex at that position is represented by. This is not
      * explicitly constructed in the constructor, and should be created by
      * child classes.
+     *
      * @type {WebGLBuffer}
      * @since 0.0.4
+     * @protected
      */
     ebo = null;
     /**
      * The model transform matrix. This defines things like rotation,
      * position, etcetera.
+     *
      * @type {Mat4}
      * @since 0.0.4
+     * @protected
      */
     transform;
     /**
      * The model's color. This is applied to every vertex globally.
      * Vertices given a texture will have this color mixed overtop of said
      * texture.
+     *
      * @type {Vec3}
      * @since 0.0.4
+     * @protected
      */
     color;
 
@@ -99,7 +109,8 @@ Selenium_Graphics_Basic.Model = class
         this.transform = GLMatrix.Mat4.create();
         GLMatrix.Mat4.fromTranslation(this.transform,
             GLMatrix.Vec3.fromValues(position.x, position.y, position.z));
-        this.color = GLMatrix.Vec3.fromValues(color.r, color.g, color.b);
+        this.color = GLMatrix.Vec3.fromValues(Math.min(color.r / 255, 1.0),
+            Math.min(color.g / 255, 1.0), Math.min(color.b / 255, 1.0));
     }
 
     /**
@@ -144,16 +155,15 @@ Selenium_Graphics_Basic.Model = class
      */
     Dye(color)
     {
-        this.color = GLMatrix.Vec3.fromValues(color.r, color.g, color.b);
+        this.color = GLMatrix.Vec3.fromValues(Math.min(color.r / 255, 1.0),
+            Math.min(color.g / 255, 1.0), Math.min(color.b / 255, 1.0));
     }
 
     /**
      * Render the model.
      * @authors Sephelim
      * @since 0.0.4
-     *
-     * @protected This method is technically still public, but should not
-     * be used outside of child classes.
+     * @protected
      *
      * @param {string} shader The shader to render the model with.
      * @param {number} index_count The count of indices contained within
@@ -193,7 +203,7 @@ Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
      * @param {Color} color The color to dye the cube.
      */
     constructor(position = {x: 0, y: 0, z: 0}, scale = 40,
-        color = {r: 255, g: 0, b: 0})
+        color = {r: 175, g: 0, b: 0})
     {
         super(position, color);
 
@@ -202,22 +212,30 @@ Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
         const buffers = Selenium_Graphics_Buffers.MO(
             // VAO
             new Float32Array([
-                scale,     scale,     0.0, // (x, y, z)
-                0.0,       scale,     0.0,
-                scale,     0.0,       0.0,
-                0.0,       0.0,       0.0,
-                scale,     scale * 2, 0.0,
-                scale * 2, scale * 2, 0.0,
-                scale * 2, scale,     0.0,
+                // Top tile
+                0.0,     0.0,     0.0,  0.0, 1.0, 0.0, // (xyz, uvw)
+                0.0,     scale,   0.0,  0.0, 1.0, 0.0,
+                scale,   scale,   0.0,  0.0, 1.0, 0.0,
+                scale,   0.0,     0.0,  0.0, 1.0, 0.0,
+                // Left tile
+                scale*2, scale*2, 0.0, -1.0, 0.0, 0.0,
+                scale,   scale,   0.0, -1.0, 0.0, 0.0,
+                scale,   0.0,     0.0, -1.0, 0.0, 0.0,
+                scale*2, scale,   0.0, -1.0, 0.0, 0.0,
+                // Right tile 
+                scale,   scale*2, 0.0, 1.0, 0.0, 0.0,
+                0.0,     scale,   0.0, 1.0, 0.0, 0.0,
+                scale,   scale,   0.0, 1.0, 0.0, 0.0,
+                scale*2, scale*2, 0.0, 1.0, 0.0, 0.0,
             ]),
             // EBO
             new Uint32Array([
-                1, 0, 2, // (v1, v2, v3)
-                1, 2, 3,
-                1, 4, 0,
-                0, 4, 5,
-                5, 6, 0,
-                0, 6, 2
+                0,  1,  2, // (v1, v2, v3)
+                0,  2,  3,
+                4,  5,  6,
+                4,  6,  7,
+                8,  9, 10,
+                8, 10, 11
             ])
         );
         // clang-format on
@@ -226,13 +244,17 @@ Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
         this.vbo = buffers[1];
         this.ebo = buffers[2];
 
-        // This corresponds to `layout(location = 0) in vec4 position`
-        // within the shader.
-        GL.vertexAttribPointer(0, 3, GL.FLOAT, false, 12, 0);
+        // I have exactly zero idea why stride is 2x the size of
+        // the attribute. I truly couldn't tell you. This is why I
+        // like Vulkan better. Man I miss Vulkan T-T
+        GL.vertexAttribPointer(0, 3, GL.FLOAT, false, 24, 0);
         GL.enableVertexAttribArray(0);
 
-        // Make sure none of our objects bleed into the global rendering
-        // scope on accident.
+        GL.vertexAttribPointer(1, 3, GL.FLOAT, true, 24, 12);
+        GL.enableVertexAttribArray(1);
+
+        // Make sure none of our objects bleed into the global
+        // rendering scope on accident.
         GL.bindBuffer(GL.ARRAY_BUFFER, null);
         GL.bindVertexArray(null);
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
