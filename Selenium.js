@@ -68,6 +68,13 @@ let renderer = () => {};
 let logic_line = () => {};
 
 /**
+ * The application's secondary resize callback, registered by the game.
+ * @type {function():void}
+ * @since 0.0.5
+ */
+let resize_callback = () => {};
+
+/**
  * Enter all config data into the global data structure.
  * @authors Sephelim
  * @since 0.0.2
@@ -297,8 +304,10 @@ Selenium.Start = async function() {
 
     GL.enable(GL.DEPTH_TEST);
 
-    window.onresize = () => { ResizeCallback() };
-    ResizeCallback();
+    window.onresize = () => {
+        ResizeCallback();
+        resize_callback();
+    };
 
     // Load in the game entry function and call it.
     const entry_script = await import(
@@ -307,7 +316,13 @@ Selenium.Start = async function() {
         typeof (entry_script.Main) != "function")
         Selenium.Logging.Panic("Missing script entrypoint.");
 
-    entry_script.Main();
+    await entry_script.Main();
+
+    // Run the resize callback once to setup any state that the
+    // game expects off the bat.
+    ResizeCallback();
+    resize_callback();
+
     window.requestAnimationFrame(HandleFrame);
 };
 
@@ -332,6 +347,19 @@ Selenium.RegisterRenderer = function(
  */
 Selenium.RegisterLogicLine = function(
     logic_function) { logic_line = logic_function; };
+
+/**
+ * Register a secondary resize callback. This is triggered after the first
+ * (non-custom projection calculations, canvas resizing) and provides a
+ * good place for scaling the canvas, among other things.
+ * @authors Sephelim
+ * @since 0.0.5
+ *
+ * @param {function():void} resize_function The function to be set as the
+ *     new secondary resize callback.
+ */
+Selenium.RegisterResizeCallback = function(
+    resize_function) { resize_callback = resize_function; };
 
 // #endregion Namespace Declaration
 // #region Module Exports

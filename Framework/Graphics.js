@@ -108,6 +108,20 @@ Selenium_Graphics.ClearScreen = function(r, g, b) {
     GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 };
 
+/**
+ * Scale the contents of the screen by the specified factor. This will not
+ * be kept should the screen be resized or otherwise transformed.
+ * @authors Sephelim
+ * @since 0.0.5
+ *
+ * @param {GLclampf} factor The factor by which to scale the projection.
+ */
+Selenium_Graphics.Scale = function(factor) {
+    GLMatrix.Mat4.scale(Selenium_Graphics.Projection,
+        Selenium_Graphics.Projection,
+        GLMatrix.Vec3.fromValues(factor, factor, factor));
+};
+
 // #endregion Namespace Declaration
 // #region Module Exports
 
