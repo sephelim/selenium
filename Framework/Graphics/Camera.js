@@ -1,6 +1,6 @@
 /**
  * @file Graphics/Camera.js
- * @authors Sephelim
+ * @authors Sephelim, Ian
  * @brief This file provides functionality for creating and utilizing a
  * camera within Selenium. This includes things like 4-dimensional
  * movement, inertia, etcetera.
@@ -130,6 +130,27 @@ Selenium_Graphics_Camera.Commit = function() {
 
     Selenium_Graphics_Camera.SetView(
         Selenium_Graphics_Shaders.Use.current_name);
+};
+/**
+ * Set the position of the camera 
+ * @authors Ian
+ * @since 0.0.5
+ *
+ * @param {number} x The x coordinte to move to
+ * @param {number} y The y coordinte to move to
+ * @param {number} z The z coordinte to move to
+ */
+Selenium_Graphics_Camera.SetPosition = function (x, y, z) {
+    Selenium_Graphics_Camera.Position.x = x;
+    Selenium_Graphics_Camera.Position.y = y;
+    Selenium_Graphics_Camera.Position.z = z;
+
+    if (Selenium_Graphics_Camera.CommitTimer.timer == 0)
+        Selenium_Graphics_Camera.CommitTimer.timer = setInterval(() => {
+            Selenium_Graphics_Camera.Commit();
+            clearInterval(Selenium_Graphics_Camera.CommitTimer.timer);
+            Selenium_Graphics_Camera.CommitTimer.timer = 0;
+        }, Selenium_Graphics_Camera.CommitTimer.value);
 };
 
 // #endregion Namespace Declaration
