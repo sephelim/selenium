@@ -221,7 +221,7 @@ Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
      * @param {Color} color The color to dye the cube.
      */
     constructor(position = {x: 0, y: 0, z: 0}, scale = 40,
-        color = {r: 255, g: 0, b: 0})
+        color = {r: 255, g: 255, b: 255})
     {
         // Clang-Format makes arrays HIDEOUS.
         // clang-format off
@@ -303,13 +303,13 @@ Selenium_Graphics_Basic.Pyramid =
         // clang-format off
         const raw_vao = new Float32Array([
             // Left tile 
-            scale,   scale*2, 0.0, 0.0, 1.0, 0.0, // (xyz, uvw)
-            scale*2, scale*2, 0.0, 0.0, 1.0, 0.0,
-            scale,   scale,   0.0, 0.0, 1.0, 0.0,
+            scale, scale * 2, 0.0, 0.0, 0.70710678118, 0.70710678118, // (xyz, uvw)
+            scale * 2, scale * 2, 0.0, 0.0, 0.70710678118, 0.70710678118,
+            scale, scale, 0.0, 0.0, 0.70710678118, 0.70710678118,
             // Right tile
-            scale*2, scale*2, 0.0, 1.0, 0.0, 0.0,
-            scale,   scale,   0.0, 1.0, 0.0, 0.0,
-            scale*2, scale,   0.0, 1.0, 0.0, 0.0
+            scale * 2, scale * 2, 0.0, 0.70710678118, 0.0, 0.70710678118,
+            scale, scale, 0.0, 0.70710678118, 0.0, 0.70710678118,
+            scale * 2, scale, 0.0, 0.70710678118, 0.0, 0.70710678118
         ]);
         const raw_ebo = new Uint32Array([
             0, 1, 2, // (v1, v2, v3)
