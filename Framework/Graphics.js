@@ -130,7 +130,10 @@ Selenium_Graphics.Scale = function(factor) {
 
 /**
  * @typedef {{r:GLclampf, g:GLclampf, b:GLclampf}} Color
- * @typedef {{x:number, y:number, z:number}} Position
+ * @typedef {Object} Position
+ * @property {number} x heferhueho
+ * @property {number} y heferhueho
+ * @property {number} z heferhueho
  */
 
 export {Selenium_Graphics};

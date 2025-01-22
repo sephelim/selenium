@@ -49,13 +49,34 @@ Selenium_Graphics_Camera.Position = {
 };
 
 /**
+ * The amount in milliseconds before position changes are committed to the
+ * camera's actual position.
+ * @since 0.0.5
+ */
+Selenium_Graphics_Camera.CommitTimer = {
+    /**
+     * The count of milliseconds between a movement and a commit.
+     * @type {number}
+     * @since 0.0.5
+     */
+    value: 50,
+    /**
+     * The actual interval ID of the commit. Should this be zero, no commit
+     * is currently pending.
+     * @type {number}
+     * @since 0.0.5
+     */
+    timer: 0
+};
+
+/**
  * Set the view matrix of the given shader. This is an expensive function,
  * and should only be done when absolutely necessary.
  * @authors Sephelim
  * @since 0.0.5
  *
- * @param {string} shader The shader to set. This must have a 4x4 matrix
- *     uniform named view_matrix, or this call will do nothing.
+ * @param {string} shader The shader to set. This must have a 4x4
+ *     matrix uniform named view_matrix, or this call will do nothing.
  */
 Selenium_Graphics_Camera.SetView = function(shader) {
     const position_vector = GLMatrix.Vec3.fromValues(
@@ -72,19 +93,43 @@ Selenium_Graphics_Camera.SetView = function(shader) {
         shader, "m4_view_matrix", position_matrix);
 };
 
-Selenium_Graphics_Camera.MoveUp = function(
-    amount) { Selenium_Graphics_Camera.Position.z -= amount; };
+/**
+ * Move the camera by an amount.
+ * @authors Sephelim
+ * @since 0.0.5
+ *
+ * @param {number} x The amount to move the camera on the X axis.
+ * @param {number} x The amount to move the camera on the Y axis.
+ * @param {number} x The amount to move the camera on the Z axis.
+ */
+Selenium_Graphics_Camera.Move = function(x, y, z) {
+    Selenium_Graphics_Camera.Move.x += x;
+    Selenium_Graphics_Camera.Move.y += y;
+    Selenium_Graphics_Camera.Move.z += z;
 
-Selenium_Graphics_Camera.MoveDown = function(
-    amount) { Selenium_Graphics_Camera.Position.z += amount; };
-
-Selenium_Graphics_Camera.MoveLeft = function(amount) {
-    Selenium_Graphics_Camera.Position.y -= amount;
-    Selenium_Graphics_Camera.Position.z -= amount / 2;
+    if (Selenium_Graphics_Camera.CommitTimer.timer == 0)
+        Selenium_Graphics_Camera.CommitTimer.timer = setInterval(() => {
+            Selenium_Graphics_Camera.Commit();
+            clearInterval(Selenium_Graphics_Camera.CommitTimer.timer);
+            Selenium_Graphics_Camera.CommitTimer.timer = 0;
+        }, Selenium_Graphics_Camera.CommitTimer.value);
 };
-Selenium_Graphics_Camera.MoveRight = function(amount) {
-    Selenium_Graphics_Camera.Position.x -= amount;
-    Selenium_Graphics_Camera.Position.z -= amount / 2;
+
+Selenium_Graphics_Camera.Move.x = 0;
+Selenium_Graphics_Camera.Move.y = 0;
+Selenium_Graphics_Camera.Move.z = 0;
+
+Selenium_Graphics_Camera.Commit = function() {
+    Selenium_Graphics_Camera.Position.x += Selenium_Graphics_Camera.Move.x;
+    Selenium_Graphics_Camera.Position.y += Selenium_Graphics_Camera.Move.y;
+    Selenium_Graphics_Camera.Position.z += Selenium_Graphics_Camera.Move.z;
+
+    Selenium_Graphics_Camera.Move.x = 0;
+    Selenium_Graphics_Camera.Move.y = 0;
+    Selenium_Graphics_Camera.Move.z = 0;
+
+    Selenium_Graphics_Camera.SetView(
+        Selenium_Graphics_Shaders.Use.current_name);
 };
 
 // #endregion Namespace Declaration
