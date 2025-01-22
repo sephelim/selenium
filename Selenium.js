@@ -225,13 +225,11 @@ function ResizeCallback()
     GLMatrix.Mat4.ortho(
         Selenium_Graphics.Projection, 0, width, height, 0, -height, width);
 
+    // 90 - 35.264 (~arcsin(tan 30°))
     GLMatrix.Mat4.rotateX(Selenium_Graphics.Projection,
-        Selenium_Graphics.Projection, GLMatrix.ToRadians(90 - 35.264));
+        Selenium_Graphics.Projection, GLMatrix.ToRadians(54.736));
     GLMatrix.Mat4.rotateZ(Selenium_Graphics.Projection,
         Selenium_Graphics.Projection, GLMatrix.ToRadians(45));
-
-    GLMatrix.Mat4.scale(Selenium_Graphics.Projection,
-        Selenium_Graphics.Projection, GLMatrix.Vec3.fromValues(1, 1, 1));
 }
 
 // #endregion Private Utilities

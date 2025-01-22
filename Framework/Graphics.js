@@ -18,6 +18,7 @@
 
 import {Selenium_Graphics_Basic} from "./Graphics/Basic.js";
 import {Selenium_Graphics_Buffers} from "./Graphics/Buffers.js";
+import {Selenium_Graphics_Camera} from "./Graphics/Camera.js";
 import {Selenium_Graphics_Shaders} from "./Graphics/Shaders.js";
 
 import {GLMatrix} from "../Dependencies/GLMatrix.js";
@@ -58,6 +59,8 @@ Selenium_Graphics.Buffers = Selenium_Graphics_Buffers;
  * @since 0.0.3
  */
 Selenium_Graphics.Shaders = Selenium_Graphics_Shaders;
+
+Selenium_Graphics.Camera = Selenium_Graphics_Camera;
 
 /**
  * The WebGL context for the engine, or null should one not have yet been
