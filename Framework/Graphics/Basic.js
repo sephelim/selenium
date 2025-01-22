@@ -203,7 +203,7 @@ Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
      * @param {Color} color The color to dye the cube.
      */
     constructor(position = {x: 0, y: 0, z: 0}, scale = 40,
-        color = { r:179, g:88, b:23 })
+        color = {r: 255, g: 0, b: 0})
     {
         super(position, color);
 
