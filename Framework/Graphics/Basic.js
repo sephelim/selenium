@@ -203,7 +203,7 @@ Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
      * @param {Color} color The color to dye the cube.
      */
     constructor(position = {x: 0, y: 0, z: 0}, scale = 40,
-        color = {r: 175, g: 0, b: 0})
+        color = { r:179, g:88, b:23 })
     {
         super(position, color);
 
@@ -213,20 +213,20 @@ Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
             // VAO
             new Float32Array([
                 // Top tile
-                0.0,     0.0,     0.0,  0.0, 1.0, 0.0, // (xyz, uvw)
-                0.0,     scale,   0.0,  0.0, 1.0, 0.0,
-                scale,   scale,   0.0,  0.0, 1.0, 0.0,
-                scale,   0.0,     0.0,  0.0, 1.0, 0.0,
+                0.0,     0.0,     0.0,  0.0, 0.0, 1.0, // (xyz, uvw)
+                0.0,     scale,   0.0,  0.0, 0.0, 1.0,
+                scale,   scale,   0.0,  0.0, 0.0, 1.0,
+                scale,   0.0,     0.0,  0.0, 0.0, 1.0,
                 // Left tile
-                scale*2, scale*2, 0.0, -1.0, 0.0, 0.0,
-                scale,   scale,   0.0, -1.0, 0.0, 0.0,
-                scale,   0.0,     0.0, -1.0, 0.0, 0.0,
-                scale*2, scale,   0.0, -1.0, 0.0, 0.0,
-                // Right tile 
-                scale,   scale*2, 0.0, 1.0, 0.0, 0.0,
-                0.0,     scale,   0.0, 1.0, 0.0, 0.0,
-                scale,   scale,   0.0, 1.0, 0.0, 0.0,
                 scale*2, scale*2, 0.0, 1.0, 0.0, 0.0,
+                scale,   scale,   0.0, 1.0, 0.0, 0.0,
+                scale,   0.0,     0.0, 1.0, 0.0, 0.0,
+                scale*2, scale,   0.0, 1.0, 0.0, 0.0,
+                // Right tile 
+                scale,   scale*2, 0.0, 0.0, 1.0, 0.0,
+                0.0,     scale,   0.0, 0.0, 1.0, 0.0,
+                scale,   scale,   0.0, 0.0, 1.0, 0.0,
+                scale*2, scale*2, 0.0, 0.0, 1.0, 0.0,
             ]),
             // EBO
             new Uint32Array([
