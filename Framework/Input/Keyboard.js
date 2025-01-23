@@ -21,9 +21,15 @@ import {Selenium_Assets} from "../Assets.js";
 // #region Private Utilities
 
 /**
+ * Construct an array of a key and its attributes into an array.
+ * @authors Sephelim
+ * @since 0.0.5
  *
- * @param {KeyboardEvent} ev
- * @returns {[string, boolean, boolean, boolean, boolean]}
+ * @param {KeyboardEvent} ev The event fired.
+ * @returns {[string, boolean, boolean, boolean, boolean]} The key
+ *     attribute array, starting with the key code as reported and then a
+ *     boolean for the following states (in order); shift, alt, control,
+ *     meta.
  */
 function ConstructKey(ev)
 {
@@ -31,15 +37,17 @@ function ConstructKey(ev)
 }
 
 /**
+ * Handle a keydown event. This can either output a keypress or keyrepeat.
+ * @authors Sephelim
+ * @since 0.0.5
  *
- * @param {KeyboardEvent} ev
+ * @param {KeyboardEvent} ev The event fired.
  */
 function HandleDown(ev)
 {
-    let callbacks;
-
-    if (ev.repeat) callbacks = Selenium_Input_Keyboard.Map.get("Hold");
-    else callbacks = Selenium_Input_Keyboard.Map.get("Press");
+    const callbacks =
+        (ev.repeat ? Selenium_Input_Keyboard.Map.get("Hold") :
+                     Selenium_Input_Keyboard.Map.get("Press"));
     if (callbacks == null) return;
 
     const key = ConstructKey(ev);
@@ -59,10 +67,17 @@ function HandleDown(ev)
     if (!callback[1].has("meta") && key[4] == true) return;
 
     // @ts-ignore This is bound at load-time.
-    callback[1]();
+    callback[0]();
     return;
 }
 
+/**
+ * Handle a keyup event.
+ * @authors Sephelim
+ * @since 0.0.5
+ *
+ * @param {KeyboardEvent} ev The event fired.
+ */
 function HandleRelease(ev)
 {
     const callbacks = Selenium_Input_Keyboard.Map.get("Release");
@@ -85,7 +100,7 @@ function HandleRelease(ev)
     if (!callback[1].has("meta") && key[4] == true) return;
 
     // @ts-ignore This is bound at load-time.
-    callback[1]();
+    callback[0]();
     return;
 }
 
@@ -109,20 +124,39 @@ Selenium_Input_Keyboard.__proto__ = null;
 Selenium_Input_Keyboard.Map = new Map();
 
 /**
- * @type {Map<string, KeyCallback>}
+ * A map of keyboard callbacks that may be triggered on key press events.
+ * This may be filled out throughout the program; for example, the camera
+ * movement callbacks are defined in the Camera.js file.
+ * @type {KeyCallbackMap}
+ * @since 0.0.5
  */
-Selenium_Input_Keyboard.PressCallbacks = new Map([]);
+Selenium_Input_Keyboard.PressCallbacks = new Map();
 
 /**
- * @type {Map<string, KeyCallback>}
+ * A map of keyboard callbacks that may be triggered on key hold events.
+ * This may be filled out throughout the program; for example, the camera
+ * movement callbacks are defined in the Camera.js file.
+ * @type {KeyCallbackMap}
+ * @since 0.0.5
  */
-Selenium_Input_Keyboard.HoldCallbacks = new Map([]);
+Selenium_Input_Keyboard.HoldCallbacks = new Map();
 
 /**
- * @type {Map<string, KeyCallback>}
+ * A map of keyboard callbacks that may be triggered on key release events.
+ * This may be filled out throughout the program; for example, the camera
+ * movement callbacks are defined in the Camera.js file.
+ * @type {KeyCallbackMap}
+ * @since 0.0.5
  */
-Selenium_Input_Keyboard.ReleaseCallbacks = new Map([]);
+Selenium_Input_Keyboard.ReleaseCallbacks = new Map();
 
+/**
+ * Load a keymap into memory.
+ * @authors Sephelim
+ * @since 0.0.5
+ *
+ * @param {string} name The basename of the keymap file.
+ */
 Selenium_Input_Keyboard.LoadMap = async function(name) {
     const loaded_map =
         await Selenium_Assets.LoadConfiguration("keymap", name);
@@ -130,11 +164,21 @@ Selenium_Input_Keyboard.LoadMap = async function(name) {
     Selenium_Input_Keyboard.Map = loaded_map.contents;
 };
 
+/**
+ * Enable keyboard input.
+ * @authors Sephelim
+ * @since 0.0.5
+ */
 Selenium_Input_Keyboard.Enable = function() {
     window.addEventListener("keydown", HandleDown);
     window.addEventListener("keyup", HandleRelease);
 };
 
+/**
+ * Disable keyboard input.
+ * @authors Sephelim
+ * @since 0.0.5
+ */
 Selenium_Input_Keyboard.Disable = function() {
     window.removeEventListener("keydown", HandleDown);
     window.removeEventListener("keyup", HandleRelease);
@@ -154,6 +198,10 @@ Selenium_Input_Keyboard.Disable = function() {
  * @typedef {Map<string, Map<string, [KeyCallback, Map<string, any>]>>}
  * Keymap A map of keyboard callbacks. This is basically a renamed
  * ConfigBody.
+ * @since 0.0.5
+ *
+ * @typedef {Map<string, KeyCallback>} KeyCallbackMap A map of key
+ * callbacks.
  * @since 0.0.5
  */
 

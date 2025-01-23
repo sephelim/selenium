@@ -2,7 +2,7 @@
 
 ---
 
-### Selenium (v0.0.4)
+### Selenium (v0.0.5)
 Selenium is a Javsscript game framework built for creating isometric pixelart games in the browser. It was built expressly for the [Khaal](https://github.com/sephelim/khaal) RTS game, and as such has many elements that help specifically with RTS/city builder game development.
 
 ---

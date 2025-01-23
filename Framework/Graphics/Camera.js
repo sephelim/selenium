@@ -25,17 +25,158 @@ import {Selenium_Input_Keyboard} from "../Input/Keyboard.js";
 import {GLMatrix} from "../../Dependencies/GLMatrix.js";
 
 /**
- * @import {Position} from "../Graphics.js"
+ * @import {KeyCallback} from "../Input/Keyboard.js"
  * @import {Mat4} from "../../Dependencies/GLMatrix.js"
  */
 
 // #endregion Module Dependencies
 // #region Private Utilities
 
-let up_movement_interval = 0;
-let down_movement_interval = 0;
-let left_movement_interval = 0;
-let right_movement_interval = 0;
+/**
+ * The interval ID for upward movement. Should this be null, it means the
+ * camera is not moving upward at all.
+ * @type {number | null}
+ * @since 0.0.5
+ */
+let up_movement_interval = null;
+
+/**
+ * The interval ID for downward movement. Should this be null, it means the
+ * camera is not moving downward at all.
+ * @type {number}
+ * @since 0.0.5
+ */
+let down_movement_interval = null;
+
+/**
+ * The interval ID for leftward movement. Should this be null, it means the
+ * camera is not moving leftward at all.
+ * @type {number}
+ * @since 0.0.5
+ */
+let left_movement_interval = null;
+
+/**
+ * The interval ID for leftward movement. Should this be null, it means the
+ * camera is not moving leftward at all.
+ * @type {number}
+ * @since 0.0.5
+ */
+let right_movement_interval = null;
+
+/**
+ * Create a movement interval.
+ * @authors Sephelim
+ * @since 0.0.5
+ *
+ * @param {number} x The amount to move in the X direction.
+ * @param {number} y The amount to move in the Y direction.
+ * @param {number} z The amount to move in the Z direction.
+ * @returns {number} The ID of the created interval.
+ */
+function MovementInterval(x, y, z)
+{
+    return setInterval(() => {
+        GLMatrix.Mat4.translate(Selenium_Graphics_Camera.Position,
+            Selenium_Graphics_Camera.Position,
+            GLMatrix.Vec3.fromValues(x, y, z));
+        // This is...not good? Maybe? Probably unnoticeable in 99% of
+        // cases.
+        Selenium_Graphics_Camera.SetView(
+            Selenium_Graphics_Shaders.Use.current_name);
+    }, 5);
+}
+
+/**
+ * The keyboard callback for moving the camera. This just decided in what
+ * direction we should be moving, and continues from there.
+ * @authors Sephelim
+ * @since 0.0.5
+ *
+ * @type {KeyCallback}
+ */
+function MoveCamera(args)
+{
+    if (args == undefined || typeof (args[0]) != "string")
+    {
+        Selenium_Logging.Warning(
+            "MoveCamera provided malformed arguments.");
+        return;
+    }
+
+    switch (args[0])
+    {
+        case "up":
+            if (up_movement_interval != null) return;
+            up_movement_interval =
+                MovementInterval(0, 0, -Selenium_Graphics_Camera.Speed);
+            break;
+        case "down":
+            if (down_movement_interval != null) return;
+            down_movement_interval =
+                MovementInterval(0, 0, Selenium_Graphics_Camera.Speed);
+            break;
+        case "left":
+            if (left_movement_interval != null) return;
+            left_movement_interval =
+                MovementInterval(Selenium_Graphics_Camera.Speed, 0,
+                    Selenium_Graphics_Camera.Speed / 2);
+            break;
+        case "right":
+            if (right_movement_interval != null) return;
+            right_movement_interval =
+                MovementInterval(-Selenium_Graphics_Camera.Speed, 0,
+                    -Selenium_Graphics_Camera.Speed / 2);
+            break;
+        default:
+            Selenium_Logging.Warning(
+                "MoveCamera provided malformed arguments.");
+            return;
+    }
+}
+
+/**
+ * The keyboard callback for stopping the camera. This just decided in what
+ * direction we should be stopping, and clearing the interval corresponding
+ * to that movement type.
+ * @authors Sephelim
+ * @since 0.0.5
+ *
+ * @type {KeyCallback}
+ */
+function StopCamera(args)
+{
+    if (args == undefined || typeof (args[0]) != "string")
+    {
+        Selenium_Logging.Warning(
+            "StopCamera provided malformed arguments.");
+        return;
+    }
+
+    switch (args[0])
+    {
+        case "up":
+            clearInterval(up_movement_interval);
+            up_movement_interval = null;
+            break;
+        case "down":
+            clearInterval(down_movement_interval);
+            down_movement_interval = null;
+            break;
+        case "left":
+            clearInterval(left_movement_interval);
+            left_movement_interval = null;
+            break;
+        case "right":
+            clearInterval(right_movement_interval);
+            right_movement_interval = null;
+            break;
+        default:
+            Selenium_Logging.Warning(
+                "StopCamera provided malformed arguments.");
+            return;
+    }
+}
 
 // #endregion Private Utilities
 // #region Namespace Declaration
@@ -56,6 +197,19 @@ Selenium_Graphics_Camera.__proto__ = null;
  * @since 0.0.5
  */
 Selenium_Graphics_Camera.Position = GLMatrix.Mat4.create();
+
+/**
+ * The movement speed of the camera.
+ *
+ * @warning Known bug: the camera moves faster on the diagonal. This is
+ * because of the Pythagorean theorem, which states the hypotenuse of a
+ * triangle is the square root of leg1^2 + leg2^2--our current method
+ * simply uses this value for all movement angles.
+ *
+ * @type {number}
+ * @since 0.0.5
+ */
+Selenium_Graphics_Camera.Speed = 1.0;
 
 /**
  * Set the view matrix of the given shader.
@@ -87,82 +241,11 @@ Selenium_Graphics_Camera.SetPosition = function(shader, x, y, z) {
     Selenium_Graphics_Camera.SetView(shader);
 };
 
-Selenium_Input_Keyboard.PressCallbacks.set("MoveCamera", function(args) {
-    if (args == undefined || typeof (args[0]) != "string")
-    {
-        Selenium_Logging.Warning(
-            "Keyboard callback 'MoveCamera' provided malformed arguments.");
-        return;
-    }
-
-    switch (args[0])
-    {
-        case "up":
-            up_movement_interval = setInterval(() => {
-                GLMatrix.Mat4.translate(Selenium_Graphics_Camera.Position,
-                    Selenium_Graphics_Camera.Position,
-                    GLMatrix.Vec3.fromValues(0, 0, -1));
-                Selenium_Graphics_Camera.SetView(
-                    Selenium_Graphics_Shaders.Use.current_name);
-            }, 5);
-            break;
-        case "down":
-            down_movement_interval = setInterval(() => {
-                GLMatrix.Mat4.translate(Selenium_Graphics_Camera.Position,
-                    Selenium_Graphics_Camera.Position,
-                    GLMatrix.Vec3.fromValues(0, 0, 1));
-                Selenium_Graphics_Camera.SetView(
-                    Selenium_Graphics_Shaders.Use.current_name);
-            }, 5);
-            break;
-        case "left":
-            left_movement_interval = setInterval(() => {
-                GLMatrix.Mat4.translate(Selenium_Graphics_Camera.Position,
-                    Selenium_Graphics_Camera.Position,
-                    GLMatrix.Vec3.fromValues(1, 0, 0.5));
-                Selenium_Graphics_Camera.SetView(
-                    Selenium_Graphics_Shaders.Use.current_name);
-            }, 5);
-            break;
-        case "right":
-            right_movement_interval = setInterval(() => {
-                GLMatrix.Mat4.translate(Selenium_Graphics_Camera.Position,
-                    Selenium_Graphics_Camera.Position,
-                    GLMatrix.Vec3.fromValues(-1, 0, -0.5));
-                Selenium_Graphics_Camera.SetView(
-                    Selenium_Graphics_Shaders.Use.current_name);
-            }, 5);
-            break;
-        default:
-            Selenium_Logging.Warning(
-                "Keyboard callback 'MoveCamera' provided malformed arguments.");
-            return;
-    }
-});
-
-Selenium_Input_Keyboard.ReleaseCallbacks.set("StopCamera", function(args) {
-    if (args == undefined || typeof (args[0]) != "string")
-    {
-        Selenium_Logging.Warning(
-            "Keyboard callback 'MoveCamera' provided malformed arguments.");
-        return;
-    }
-
-    switch (args[0])
-    {
-        case "up":    clearInterval(up_movement_interval); break;
-        case "down":  clearInterval(down_movement_interval); break;
-        case "left":  clearInterval(left_movement_interval); break;
-        case "right": clearInterval(right_movement_interval); break;
-        default:
-            Selenium_Logging.Warning(
-                "Keyboard callback 'MoveCamera' provided malformed arguments.");
-            return;
-    }
-});
-
 // #endregion Namespace Declaration
 // #region Module Exports
+
+Selenium_Input_Keyboard.PressCallbacks.set("MoveCamera", MoveCamera);
+Selenium_Input_Keyboard.ReleaseCallbacks.set("StopCamera", StopCamera);
 
 export {Selenium_Graphics_Camera};
 
