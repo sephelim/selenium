@@ -61,6 +61,8 @@ function DecideConfigLocation(type)
     switch (type)
     {
         case "global": return "/";
+        case "keymap":
+            return Selenium_Data.GetAssetDirectory() + "/Keymaps/";
     }
 }
 
@@ -80,6 +82,10 @@ function CheckSectionName(type, name)
     {
         case "global":
             if (name != "Selenium" && name != "Game") return false;
+            return true;
+        case "keymap":
+            if (name != "Press" && name != "Hold" && name != "Release")
+                return false;
             return true;
     }
 }
@@ -114,6 +120,10 @@ function CheckKeyName(type, section, name)
                 name != "license")
                 return false;
             return true;
+        // The user can do whatever they want within keymap keys. It's too
+        // expensive to vet the inputs, and if they're wrong--the function
+        // just won't ever be triggered.
+        case "keymap": return true;
     }
 }
 
@@ -144,6 +154,9 @@ function CheckSubkeyName(type, section, name, subname)
             }
 
             return false;
+        case "keymap":
+            if (subname != "tolerant") return false;
+            return true;
     }
 }
 
@@ -193,6 +206,30 @@ function ParseValue(type, section, key, value)
                 return keywords;
             }
             return value;
+        case "keymap":
+            const argument_start = value.indexOf("(");
+
+            let function_name, function_arguments = undefined;
+            function_name = value.substring(
+                0, (argument_start == -1 ? undefined : argument_start));
+            if (argument_start != -1)
+                function_arguments = value.substring(
+                    argument_start + 1, value.indexOf(")"));
+
+            let requested_function;
+
+            if (section == "Press")
+                requested_function =
+                    Selenium_Utilities.PressCallbacks.get(function_name);
+            else if (section == "Hold")
+                requested_function =
+                    Selenium_Utilities.HoldCallbacks.get(function_name);
+            else if (section == "Release")
+                requested_function =
+                    Selenium_Utilities.ReleaseCallbacks.get(function_name);
+
+            if (requested_function == null) return null;
+            return requested_function.bind(window, function_arguments);
     }
 }
 
@@ -214,7 +251,8 @@ function ParseConfig(type, contents)
     const lines =
         contents.replaceAll(Selenium_Utilities.Regexes.get("space"), "")
             .split("\n")
-            .filter((v) => v != "" && v[0] != "#" && v[0] != ";");
+            .filter(
+                (v) => v != "" && !v.includes("#") && !v.includes(";"));
 
     let section_name = "";
     let key = "";
@@ -252,6 +290,15 @@ function ParseConfig(type, contents)
             const value_string = line.substring(line.indexOf("=") + 1);
             const value =
                 ParseValue(type, section_name, key, value_string);
+
+            if (type == "keymap" && value == null)
+            {
+                Selenium_Logging.Error(
+                    "Failed to find requested function '" + value_string +
+                    "'.");
+                continue;
+            }
+
             section.set(key, [value, new Map()]);
         }
         else
@@ -384,6 +431,9 @@ Selenium_Assets.LoadImage = async function(path) {
  * @param {ConfigType} type The type of configuration file we're
  *     loading.
  * @param {string} name The basename of the configuration file.
+ *
+ * @returns {Promise<Selenium_Assets.Configuration | null>} The loaded
+ *     configuration file, or null if an error occurred.
  */
 Selenium_Assets.LoadConfiguration = async function(type, name) {
     const file_path = DecideConfigLocation(type) + name + ".sconfig";
@@ -464,9 +514,9 @@ Selenium_Assets.LoadShader = async function(name) {
 // #region Module Exports
 
 /**
- * @typedef {"global"} ConfigType The type of a config. This provides
- * the loader information like where to find the file, what to expect
- * within it, and more.
+ * @typedef {"global" | "keymap"} ConfigType The type of a config. This
+ * provides the loader information like where to find the file, what to
+ * expect within it, and more.
  * @since 0.0.1
  *
  * @typedef {Map<string, Map<string, [any, Map<string, any>]>>} ConfigBody

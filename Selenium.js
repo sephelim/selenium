@@ -19,6 +19,7 @@
 import {Selenium_Assets} from "./Framework/Assets.js";
 import {Selenium_Data} from "./Framework/Data.js";
 import {Selenium_Graphics} from "./Framework/Graphics.js";
+import {Selenium_Input} from "./Framework/Input.js";
 import {Selenium_Logging} from "./Framework/Logging.js";
 import {Selenium_Utilities} from "./Framework/Utilities.js";
 
@@ -263,6 +264,13 @@ Selenium.Data = Selenium_Data;
  * @since 0.0.3
  */
 Selenium.Graphics = Selenium_Graphics;
+
+/**
+ * The Selenium input namespace. This contains all things to do with input;
+ * keymaps, rebinding keys, dealing with clicking and dragging, ecetera.
+ * @since 0.0.5
+ */
+Selenium.Input = Selenium_Input;
 
 /**
  * The Selenium logging namespace. This provides logic for logging
