@@ -16,15 +16,28 @@
 
 // #region Module Dependencies
 
+import {Selenium_Logging} from "../Logging.js";
+
 import {Selenium_Graphics_Shaders} from "./Shaders.js";
+
+import {Selenium_Input_Keyboard} from "../Input/Keyboard.js";
 
 import {GLMatrix} from "../../Dependencies/GLMatrix.js";
 
 /**
  * @import {Position} from "../Graphics.js"
+ * @import {Mat4} from "../../Dependencies/GLMatrix.js"
  */
 
 // #endregion Module Dependencies
+// #region Private Utilities
+
+let up_movement_interval = 0;
+let down_movement_interval = 0;
+let left_movement_interval = 0;
+let right_movement_interval = 0;
+
+// #endregion Private Utilities
 // #region Namespace Declaration
 
 /**
@@ -39,39 +52,13 @@ Selenium_Graphics_Camera.__proto__ = null;
  * The actual position of the camera. Because of the isometric projection,
  * the X axis goes to the bottom right (positive), the Z axis goes to the
  * bottom (negative), and the Y axis goes to the bottom left (positive).
- * @type {Position}
+ * @type {Mat4}
  * @since 0.0.5
  */
-Selenium_Graphics_Camera.Position = {
-    x: 0,
-    y: 0,
-    z: 0
-};
+Selenium_Graphics_Camera.Position = GLMatrix.Mat4.create();
 
 /**
- * The amount in milliseconds before position changes are committed to the
- * camera's actual position.
- * @since 0.0.5
- */
-Selenium_Graphics_Camera.CommitTimer = {
-    /**
-     * The count of milliseconds between a movement and a commit.
-     * @type {number}
-     * @since 0.0.5
-     */
-    value: 50,
-    /**
-     * The actual interval ID of the commit. Should this be zero, no commit
-     * is currently pending.
-     * @type {number}
-     * @since 0.0.5
-     */
-    timer: 0
-};
-
-/**
- * Set the view matrix of the given shader. This is an expensive function,
- * and should only be done when absolutely necessary.
+ * Set the view matrix of the given shader.
  * @authors Sephelim
  * @since 0.0.5
  *
@@ -79,79 +66,100 @@ Selenium_Graphics_Camera.CommitTimer = {
  *     matrix uniform named view_matrix, or this call will do nothing.
  */
 Selenium_Graphics_Camera.SetView = function(shader) {
-    const position_vector = GLMatrix.Vec3.fromValues(
-        Selenium_Graphics_Camera.Position.x,
-        Selenium_Graphics_Camera.Position.y,
-        Selenium_Graphics_Camera.Position.z,
-    );
-
-    let position_matrix = GLMatrix.Mat4.create();
-    GLMatrix.Mat4.translate(
-        position_matrix, position_matrix, position_vector);
-
     Selenium_Graphics_Shaders.SetUniform(
-        shader, "m4_view_matrix", position_matrix);
+        shader, "m4_view_matrix", Selenium_Graphics_Camera.Position);
 };
 
 /**
- * Move the camera by an amount.
- * @authors Sephelim
- * @since 0.0.5
- *
- * @param {number} x The amount to move the camera on the X axis.
- * @param {number} x The amount to move the camera on the Y axis.
- * @param {number} x The amount to move the camera on the Z axis.
- */
-Selenium_Graphics_Camera.Move = function(x, y, z) {
-    Selenium_Graphics_Camera.Move.x += x;
-    Selenium_Graphics_Camera.Move.y += y;
-    Selenium_Graphics_Camera.Move.z += z;
-
-    if (Selenium_Graphics_Camera.CommitTimer.timer == 0)
-        Selenium_Graphics_Camera.CommitTimer.timer = setInterval(() => {
-            Selenium_Graphics_Camera.Commit();
-            clearInterval(Selenium_Graphics_Camera.CommitTimer.timer);
-            Selenium_Graphics_Camera.CommitTimer.timer = 0;
-        }, Selenium_Graphics_Camera.CommitTimer.value);
-};
-
-Selenium_Graphics_Camera.Move.x = 0;
-Selenium_Graphics_Camera.Move.y = 0;
-Selenium_Graphics_Camera.Move.z = 0;
-
-Selenium_Graphics_Camera.Commit = function() {
-    Selenium_Graphics_Camera.Position.x += Selenium_Graphics_Camera.Move.x;
-    Selenium_Graphics_Camera.Position.y += Selenium_Graphics_Camera.Move.y;
-    Selenium_Graphics_Camera.Position.z += Selenium_Graphics_Camera.Move.z;
-
-    Selenium_Graphics_Camera.Move.x = 0;
-    Selenium_Graphics_Camera.Move.y = 0;
-    Selenium_Graphics_Camera.Move.z = 0;
-
-    Selenium_Graphics_Camera.SetView(
-        Selenium_Graphics_Shaders.Use.current_name);
-};
-/**
- * Set the position of the camera 
+ * Set the position of the camera.
  * @authors Ian
  * @since 0.0.5
  *
- * @param {number} x The x coordinte to move to
- * @param {number} y The y coordinte to move to
- * @param {number} z The z coordinte to move to
+ * @param {string} shader The shader for which to set the camera's
+ *     position.
+ * @param {number} x The x coordinte to move to.
+ * @param {number} y The y coordinte to move to.
+ * @param {number} z The z coordinte to move to.
  */
-Selenium_Graphics_Camera.SetPosition = function (x, y, z) {
-    Selenium_Graphics_Camera.Position.x = x;
-    Selenium_Graphics_Camera.Position.y = y;
-    Selenium_Graphics_Camera.Position.z = z;
-
-    if (Selenium_Graphics_Camera.CommitTimer.timer == 0)
-        Selenium_Graphics_Camera.CommitTimer.timer = setInterval(() => {
-            Selenium_Graphics_Camera.Commit();
-            clearInterval(Selenium_Graphics_Camera.CommitTimer.timer);
-            Selenium_Graphics_Camera.CommitTimer.timer = 0;
-        }, Selenium_Graphics_Camera.CommitTimer.value);
+Selenium_Graphics_Camera.SetPosition = function(shader, x, y, z) {
+    GLMatrix.Mat4.fromTranslation(Selenium_Graphics_Camera.Position,
+        GLMatrix.Vec3.fromValues(x, y, z));
+    Selenium_Graphics_Camera.SetView(shader);
 };
+
+Selenium_Input_Keyboard.PressCallbacks.set("MoveCamera", function(args) {
+    if (args == undefined || typeof (args[0]) != "string")
+    {
+        Selenium_Logging.Warning(
+            "Keyboard callback 'MoveCamera' provided malformed arguments.");
+        return;
+    }
+
+    switch (args[0])
+    {
+        case "up":
+            up_movement_interval = setInterval(() => {
+                GLMatrix.Mat4.translate(Selenium_Graphics_Camera.Position,
+                    Selenium_Graphics_Camera.Position,
+                    GLMatrix.Vec3.fromValues(0, 0, -1));
+                Selenium_Graphics_Camera.SetView(
+                    Selenium_Graphics_Shaders.Use.current_name);
+            }, 5);
+            break;
+        case "down":
+            down_movement_interval = setInterval(() => {
+                GLMatrix.Mat4.translate(Selenium_Graphics_Camera.Position,
+                    Selenium_Graphics_Camera.Position,
+                    GLMatrix.Vec3.fromValues(0, 0, 1));
+                Selenium_Graphics_Camera.SetView(
+                    Selenium_Graphics_Shaders.Use.current_name);
+            }, 5);
+            break;
+        case "left":
+            left_movement_interval = setInterval(() => {
+                GLMatrix.Mat4.translate(Selenium_Graphics_Camera.Position,
+                    Selenium_Graphics_Camera.Position,
+                    GLMatrix.Vec3.fromValues(1, 0, 0.5));
+                Selenium_Graphics_Camera.SetView(
+                    Selenium_Graphics_Shaders.Use.current_name);
+            }, 5);
+            break;
+        case "right":
+            right_movement_interval = setInterval(() => {
+                GLMatrix.Mat4.translate(Selenium_Graphics_Camera.Position,
+                    Selenium_Graphics_Camera.Position,
+                    GLMatrix.Vec3.fromValues(-1, 0, -0.5));
+                Selenium_Graphics_Camera.SetView(
+                    Selenium_Graphics_Shaders.Use.current_name);
+            }, 5);
+            break;
+        default:
+            Selenium_Logging.Warning(
+                "Keyboard callback 'MoveCamera' provided malformed arguments.");
+            return;
+    }
+});
+
+Selenium_Input_Keyboard.ReleaseCallbacks.set("StopCamera", function(args) {
+    if (args == undefined || typeof (args[0]) != "string")
+    {
+        Selenium_Logging.Warning(
+            "Keyboard callback 'MoveCamera' provided malformed arguments.");
+        return;
+    }
+
+    switch (args[0])
+    {
+        case "up":    clearInterval(up_movement_interval); break;
+        case "down":  clearInterval(down_movement_interval); break;
+        case "left":  clearInterval(left_movement_interval); break;
+        case "right": clearInterval(right_movement_interval); break;
+        default:
+            Selenium_Logging.Warning(
+                "Keyboard callback 'MoveCamera' provided malformed arguments.");
+            return;
+    }
+});
 
 // #endregion Namespace Declaration
 // #region Module Exports

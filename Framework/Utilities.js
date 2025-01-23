@@ -41,49 +41,6 @@ Selenium_Utilities.__proto__ = null;
 Selenium_Utilities.Regexes =
     new Map([["space", new RegExp(/^ +| +$| +(?= )/gm)]]);
 
-//! figure out a place for these minus an import cycle
-
-/**
- * @type {Map<string, KeyCallback>}
- */
-Selenium_Utilities.PressCallbacks = new Map([[
-    "MoveCamera",
-    function(args) {
-        if (typeof (args[0]) != "string")
-        {
-            Selenium_Logging.Warning(
-                "Keyboard callback 'MoveCamera' provided malformed arguments.");
-            return;
-        }
-    }
-]]);
-
-/**
- * @type {Map<string, KeyCallback>}
- */
-Selenium_Utilities.HoldCallbacks = new Map([[
-    "MoveCamera",
-    function(args) {
-        console.log(args);
-        if (args == undefined || typeof (args[0]) != "string")
-        {
-            Selenium_Logging.Warning(
-                "Keyboard callback 'MoveCamera' provided malformed arguments.");
-            return;
-        }
-    }
-]]);
-
-/**
- * @type {Map<string, KeyCallback>}
- */
-Selenium_Utilities.ReleaseCallbacks = new Map([[
-    "StopCamera",
-    function(_args) {
-        // inertia here
-    }
-]]);
-
 // #endregion Namespace Declaration
 // #region Module Exports
 

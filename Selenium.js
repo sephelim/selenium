@@ -223,8 +223,9 @@ function ResizeCallback()
     // Only re-calculate the projection matrix if it's not custom.
     if (Selenium_Graphics.CustomProjection == true) return;
 
-    GLMatrix.Mat4.ortho(
-        Selenium_Graphics.Projection, 0, width, height, 0, -height, width);
+    // The near/far planes are meaningless-Z is rotated 45 degrees.
+    GLMatrix.Mat4.ortho(Selenium_Graphics.Projection, 0, width, height, 0,
+        -height * 100, width * 100);
 
     // 90 - 35.264 (~arcsin(tan 30°))
     GLMatrix.Mat4.rotateX(Selenium_Graphics.Projection,

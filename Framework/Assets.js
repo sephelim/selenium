@@ -19,6 +19,8 @@ import {Selenium_Data} from "./Data.js";
 import {Selenium_Logging} from "./Logging.js";
 import {Selenium_Utilities} from "./Utilities.js";
 
+import {Selenium_Input_Keyboard} from "./Input/Keyboard.js";
+
 // #endregion Module Dependencies
 // #region Private Utilities
 
@@ -213,20 +215,24 @@ function ParseValue(type, section, key, value)
             function_name = value.substring(
                 0, (argument_start == -1 ? undefined : argument_start));
             if (argument_start != -1)
-                function_arguments = value.substring(
-                    argument_start + 1, value.indexOf(")"));
+                function_arguments =
+                    value.substring(argument_start + 1, value.indexOf(")"))
+                        .split(",");
 
             let requested_function;
 
             if (section == "Press")
                 requested_function =
-                    Selenium_Utilities.PressCallbacks.get(function_name);
+                    Selenium_Input_Keyboard.PressCallbacks.get(
+                        function_name);
             else if (section == "Hold")
                 requested_function =
-                    Selenium_Utilities.HoldCallbacks.get(function_name);
+                    Selenium_Input_Keyboard.HoldCallbacks.get(
+                        function_name);
             else if (section == "Release")
                 requested_function =
-                    Selenium_Utilities.ReleaseCallbacks.get(function_name);
+                    Selenium_Input_Keyboard.ReleaseCallbacks.get(
+                        function_name);
 
             if (requested_function == null) return null;
             return requested_function.bind(window, function_arguments);

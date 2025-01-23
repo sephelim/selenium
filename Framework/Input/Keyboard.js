@@ -108,6 +108,21 @@ Selenium_Input_Keyboard.__proto__ = null;
  */
 Selenium_Input_Keyboard.Map = new Map();
 
+/**
+ * @type {Map<string, KeyCallback>}
+ */
+Selenium_Input_Keyboard.PressCallbacks = new Map([]);
+
+/**
+ * @type {Map<string, KeyCallback>}
+ */
+Selenium_Input_Keyboard.HoldCallbacks = new Map([]);
+
+/**
+ * @type {Map<string, KeyCallback>}
+ */
+Selenium_Input_Keyboard.ReleaseCallbacks = new Map([]);
+
 Selenium_Input_Keyboard.LoadMap = async function(name) {
     const loaded_map =
         await Selenium_Assets.LoadConfiguration("keymap", name);
