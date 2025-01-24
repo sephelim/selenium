@@ -18,7 +18,7 @@
 
 import {Selenium_Utilities} from "../Utilities.js";
 
-import {Selenium_Graphics_Shaders} from "./Shaders.js";
+import {Selenium_Graphics_Shaders} from "../Graphics/Shaders.js";
 
 import {Selenium_Input_Keyboard} from "../Input/Keyboard.js";
 
@@ -85,12 +85,12 @@ let right_movement_interval = null;
 function MovementInterval(x, y, z)
 {
     return setInterval(() => {
-        GLMatrix.Mat4.translate(Selenium_Graphics_Camera.Position,
-            Selenium_Graphics_Camera.Position,
+        GLMatrix.Mat4.translate(Selenium_Input_Camera.Position,
+            Selenium_Input_Camera.Position,
             GLMatrix.Vec3.fromValues(x, y, z));
         // This is...not good? Maybe? Probably unnoticeable in 99% of
         // cases.
-        Selenium_Graphics_Camera.SetView();
+        Selenium_Input_Camera.SetView();
     }, 5);
 }
 
@@ -116,24 +116,24 @@ function MoveCamera(args)
         case "up":
             if (up_movement_interval != null) return;
             up_movement_interval =
-                MovementInterval(0, 0, -Selenium_Graphics_Camera.Speed);
+                MovementInterval(0, 0, -Selenium_Input_Camera.Speed);
             break;
         case "down":
             if (down_movement_interval != null) return;
             down_movement_interval =
-                MovementInterval(0, 0, Selenium_Graphics_Camera.Speed);
+                MovementInterval(0, 0, Selenium_Input_Camera.Speed);
             break;
         case "left":
             if (left_movement_interval != null) return;
             left_movement_interval =
-                MovementInterval(Selenium_Graphics_Camera.Speed, 0,
-                    Selenium_Graphics_Camera.Speed / 2);
+                MovementInterval(Selenium_Input_Camera.Speed, 0,
+                    Selenium_Input_Camera.Speed / 2);
             break;
         case "right":
             if (right_movement_interval != null) return;
             right_movement_interval =
-                MovementInterval(-Selenium_Graphics_Camera.Speed, 0,
-                    -Selenium_Graphics_Camera.Speed / 2);
+                MovementInterval(-Selenium_Input_Camera.Speed, 0,
+                    -Selenium_Input_Camera.Speed / 2);
             break;
         default:
             Selenium_Utilities.Warning(
@@ -193,8 +193,8 @@ function StopCamera(args)
  * functionality for setting and moving the camera view matrix.
  * @since 0.0.5
  */
-var Selenium_Graphics_Camera = Selenium_Graphics_Camera || {};
-Selenium_Graphics_Camera.__proto__ = null;
+var Selenium_Input_Camera = Selenium_Input_Camera || {};
+Selenium_Input_Camera.__proto__ = null;
 
 /**
  * The actual position of the camera. Because of the isometric projection,
@@ -203,7 +203,7 @@ Selenium_Graphics_Camera.__proto__ = null;
  * @type {Mat4}
  * @since 0.0.5
  */
-Selenium_Graphics_Camera.Position = GLMatrix.Mat4.create();
+Selenium_Input_Camera.Position = GLMatrix.Mat4.create();
 
 /**
  * The movement speed of the camera.
@@ -216,7 +216,7 @@ Selenium_Graphics_Camera.Position = GLMatrix.Mat4.create();
  * @type {number}
  * @since 0.0.5
  */
-Selenium_Graphics_Camera.Speed = 1.0;
+Selenium_Input_Camera.Speed = 1.0;
 
 /**
  * Set the view matrix of the given shader.
@@ -226,10 +226,10 @@ Selenium_Graphics_Camera.Speed = 1.0;
  * @param {string} shader The shader to set. This must have a 4x4
  *     matrix uniform named view_matrix, or this call will do nothing.
  */
-Selenium_Graphics_Camera.SetView = function(shader = last_shader) {
+Selenium_Input_Camera.SetView = function(shader = last_shader) {
     last_shader = shader;
     Selenium_Graphics_Shaders.SetUniform(
-        shader, "m4_view_matrix", Selenium_Graphics_Camera.Position);
+        shader, "m4_view_matrix", Selenium_Input_Camera.Position);
 };
 
 /**
@@ -243,10 +243,10 @@ Selenium_Graphics_Camera.SetView = function(shader = last_shader) {
  * @param {number} y The y coordinte to move to.
  * @param {number} z The z coordinte to move to.
  */
-Selenium_Graphics_Camera.SetPosition = function(shader, x, y, z) {
-    GLMatrix.Mat4.fromTranslation(Selenium_Graphics_Camera.Position,
-        GLMatrix.Vec3.fromValues(x, y, z));
-    Selenium_Graphics_Camera.SetView(shader);
+Selenium_Input_Camera.SetPosition = function(shader, x, y, z) {
+    GLMatrix.Mat4.fromTranslation(
+        Selenium_Input_Camera.Position, GLMatrix.Vec3.fromValues(x, y, z));
+    Selenium_Input_Camera.SetView(shader);
 };
 
 // #endregion Namespace Declaration
@@ -255,6 +255,6 @@ Selenium_Graphics_Camera.SetPosition = function(shader, x, y, z) {
 Selenium_Input_Keyboard.PressCallbacks.set("MoveCamera", MoveCamera);
 Selenium_Input_Keyboard.ReleaseCallbacks.set("StopCamera", StopCamera);
 
-export {Selenium_Graphics_Camera};
+export {Selenium_Input_Camera};
 
 // #endregion Module Exports

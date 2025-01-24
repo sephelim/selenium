@@ -23,6 +23,8 @@ import {Selenium_Utilities} from "./Framework/Utilities.js";
 
 import {Selenium_Input_Keyboard} from "./Framework/Input/Keyboard.js";
 import {Selenium_Input_Mouse} from "./Framework/Input/Mouse.js";
+import {Selenium_Input_Camera} from "./Framework/Input/Camera.js";
+
 import {GL} from "./Framework/Graphics/GL.js";
 
 import {GLMatrix} from "./Dependencies/GLMatrix.js";
@@ -291,6 +293,13 @@ Selenium.Input.Keyboard = Selenium_Input_Keyboard;
  * @since 0.0.5
  */
 Selenium.Input.Mouse = Selenium_Input_Mouse;
+
+/**
+ * The Selenium camera subnamespace of the input space. This provides
+ * functionality for setting and moving the camera view matrix.
+ * @since 0.0.5
+ */
+Selenium.Input.Camera = Selenium_Input_Camera;
 
 /**
  * Miscellaneous utility objects, like general-purpose regexes and
