@@ -19,8 +19,11 @@
 import {Selenium_Assets} from "./Framework/Assets.js";
 import {Selenium_Data} from "./Framework/Data.js";
 import {Selenium_Graphics} from "./Framework/Graphics.js";
-import {Selenium_Input} from "./Framework/Input.js";
 import {Selenium_Utilities} from "./Framework/Utilities.js";
+
+import {Selenium_Input_Keyboard} from "./Framework/Input/Keyboard.js";
+import {Selenium_Input_Mouse} from "./Framework/Input/Mouse.js";
+import {GL} from "./Framework/Graphics/GL.js";
 
 import {GLMatrix} from "./Dependencies/GLMatrix.js";
 
@@ -270,7 +273,24 @@ Selenium.Graphics = Selenium_Graphics;
  * keymaps, rebinding keys, dealing with clicking and dragging, ecetera.
  * @since 0.0.5
  */
-Selenium.Input = Selenium_Input;
+Selenium.Input = Selenium.Input || {};
+Selenium.Input.__proto__ = null;
+
+/**
+ * The Selenium keyboard subnamespace of the input space. This contains
+ * specifically keyboard-related input things, like loading keymaps and
+ * re-binding keys.
+ * @since 0.0.5
+ */
+Selenium.Input.Keyboard = Selenium_Input_Keyboard;
+
+/**
+ * The Selenium mouse subnamespace of the input space. This contains
+ * specifically mouse-related input things, like handling dragging and
+ * clicking.
+ * @since 0.0.5
+ */
+Selenium.Input.Mouse = Selenium_Input_Mouse;
 
 /**
  * Miscellaneous utility objects, like general-purpose regexes and
@@ -293,14 +313,7 @@ Selenium.Start = async function() {
     await LoadGameDocuments();
     ConstructDocument();
 
-    const view_canvas = document.getElementById("view");
-    if (view_canvas instanceof HTMLCanvasElement)
-        Selenium.Graphics.GL =
-            view_canvas.getContext("webgl2", {antialias: false});
-    else Selenium.Utilities.Panic("Missing view canvas!");
-    globalThis.GL = Selenium.Graphics.GL;
-
-    GL.enable(GL.DEPTH_TEST);
+    Selenium.Graphics.LoadGL();
 
     window.onresize = () => {
         ResizeCallback();
@@ -314,7 +327,7 @@ Selenium.Start = async function() {
         typeof (entry_script.Main) != "function")
         Selenium.Utilities.Panic("Missing script entrypoint.");
 
-    await entry_script.Main();
+    await entry_script.Main(GL);
 
     // Run the resize callback once to setup any state that the
     // game expects off the bat.

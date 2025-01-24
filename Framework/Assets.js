@@ -18,6 +18,8 @@
 import {Selenium_Data} from "./Data.js";
 import {Selenium_Utilities} from "./Utilities.js";
 
+import {GL} from "./Graphics/GL.js";
+
 import {Selenium_Input_Keyboard} from "./Input/Keyboard.js";
 
 // #endregion Module Dependencies
@@ -452,14 +454,14 @@ Selenium_Assets.LoadConfiguration = async function(type, name) {
 };
 
 /**
- * Load and compile a complete WebGL shader.
+ * Load and compile a complete WebSelenium_Graphics.GL shader.
  * @authors Sephelim
  * @since 0.0.3
  *
  * @param {string} name The name of the shader. This is the folder searched
  *     for within the game assets > shaders folder.
- * @returns {Promise<WebGLProgram | null>} The fully compiled shader
- *     object, or null if an error occurred.
+ * @returns {Promise<WebGLProgram | null>} The fully
+ *     compiled shader object, or null if an error occurred.
  */
 Selenium_Assets.LoadShader = async function(name) {
     const base_path =
@@ -522,9 +524,9 @@ Selenium_Assets.LoadShader = async function(name) {
 // #region Module Exports
 
 /**
- * @typedef {"global" | "keymap"} ConfigType The type of a config. This
- * provides the loader information like where to find the file, what to
- * expect within it, and more.
+ * @typedef {"global" | "keymap"} ConfigType The type of
+ * a config. This provides the loader information like where to find the
+ * file, what to expect within it, and more.
  * @since 0.0.1
  *
  * @typedef {Map<string, Map<string, [any, Map<string, any>]>>} ConfigBody

@@ -20,6 +20,7 @@ import {Selenium_Graphics_Basic} from "./Graphics/Basic.js";
 import {Selenium_Graphics_Buffers} from "./Graphics/Buffers.js";
 import {Selenium_Graphics_Camera} from "./Graphics/Camera.js";
 import {Selenium_Graphics_Shaders} from "./Graphics/Shaders.js";
+import {GL, LoadGL} from "./Graphics/GL.js";
 
 import {GLMatrix} from "../Dependencies/GLMatrix.js";
 
@@ -60,15 +61,19 @@ Selenium_Graphics.Buffers = Selenium_Graphics_Buffers;
  */
 Selenium_Graphics.Shaders = Selenium_Graphics_Shaders;
 
+/**
+ * The Selenium camera subnamespace of the camera space. This provides
+ * functionality for setting and moving the camera view matrix.
+ * @since 0.0.5
+ */
 Selenium_Graphics.Camera = Selenium_Graphics_Camera;
 
 /**
- * The WebGL context for the engine, or null should one not have yet been
- * bound.
- * @type {WebGL2RenderingContext}
- * @since 0.0.3
+ * Load a WebGL context for the game.
+ * @authors Sephelim
+ * @since 0.0.6
  */
-Selenium_Graphics.GL = null;
+Selenium_Graphics.LoadGL = LoadGL;
 
 /**
  * The current projection matrix of the game. This is, by defaut, set in
@@ -87,14 +92,6 @@ Selenium_Graphics.Projection = GLMatrix.Mat4.create();
  * @since 0.0.4
  */
 Selenium_Graphics.CustomProjection = false;
-
-/**
- * The WebGL context for the engine, or null should one not have yet been
- * bound.
- * @type {WebGL2RenderingContext}
- * @since 0.0.3
- */
-globalThis.GL = null;
 
 /**
  * Clears the screen to a pure color.
@@ -129,11 +126,15 @@ Selenium_Graphics.Scale = function(factor) {
 // #region Module Exports
 
 /**
- * @typedef {{r:GLclampf, g:GLclampf, b:GLclampf}} Color
- * @typedef {Object} Position
- * @property {number} x heferhueho
- * @property {number} y heferhueho
- * @property {number} z heferhueho
+ * @typedef {Object} Color A normalized RGB color.
+ * @property {GLclampf} r The normalized red component of the color.
+ * @property {GLclampf} g The normalized green component of the color.
+ * @property {GLclampf} b The normalized blue component of the color.
+ *
+ * @typedef {Object} Position A 3D position.
+ * @property {number} x The X coordinate of the position.
+ * @property {number} y The Y coordinate of the position.
+ * @property {number} z The Z coordinate of the position.
  */
 
 export {Selenium_Graphics};

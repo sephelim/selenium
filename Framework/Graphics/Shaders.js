@@ -17,6 +17,7 @@
 // #region Module Dependencies
 
 import {Selenium_Assets} from "../Assets.js";
+import {GL} from "./GL.js";
 
 // #endregion Module Dependencies
 // #region Namespace Declarations
@@ -115,25 +116,8 @@ Selenium_Graphics_Shaders.Use = function(name) {
     const shader = Selenium_Graphics_Shaders.Loaded.get(name);
     if (shader == undefined) return false;
     GL.useProgram(shader.program);
-
-    Selenium_Graphics_Shaders.Use.current = shader;
-    Selenium_Graphics_Shaders.Use.current_name = name;
     return true;
 };
-
-/**
- * The currently used shader program.
- * @type {Shader}
- * @since 0.0.5
- */
-Selenium_Graphics_Shaders.Use.current = null;
-
-/**
- * The currently used shader program's name.
- * @type {string}
- * @since 0.0.5
- */
-Selenium_Graphics_Shaders.Use.current_name = "";
 
 /**
  * Grab a uniform location from a given preloaded shader.

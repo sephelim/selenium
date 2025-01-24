@@ -18,8 +18,7 @@
 
 import {Selenium_Graphics_Buffers} from "./Buffers.js";
 import {Selenium_Graphics_Shaders} from "./Shaders.js";
-
-import {Selenium_Utilities} from "../Utilities.js";
+import {GL} from "./GL.js";
 
 import {GLMatrix} from "../../Dependencies/GLMatrix.js";
 

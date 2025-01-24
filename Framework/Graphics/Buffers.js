@@ -14,6 +14,11 @@
  */
 "use strict";
 
+// #region Module Dependencies
+
+import {GL} from "./GL.js";
+
+// #endregion Module Dependencies
 // #region Namespace Declarations
 
 /**

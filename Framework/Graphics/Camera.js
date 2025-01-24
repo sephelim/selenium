@@ -33,6 +33,14 @@ import {GLMatrix} from "../../Dependencies/GLMatrix.js";
 // #region Private Utilities
 
 /**
+ * The last shader that was bound to the camera. This is used for setting
+ * the view matrix without direct user interaction (through intervals).
+ * @type {string}
+ * @since 0.0.6
+ */
+let last_shader = "";
+
+/**
  * The interval ID for upward movement. Should this be null, it means the
  * camera is not moving upward at all.
  * @type {number | null}
@@ -82,8 +90,7 @@ function MovementInterval(x, y, z)
             GLMatrix.Vec3.fromValues(x, y, z));
         // This is...not good? Maybe? Probably unnoticeable in 99% of
         // cases.
-        Selenium_Graphics_Camera.SetView(
-            Selenium_Graphics_Shaders.Use.current_name);
+        Selenium_Graphics_Camera.SetView();
     }, 5);
 }
 
@@ -219,7 +226,8 @@ Selenium_Graphics_Camera.Speed = 1.0;
  * @param {string} shader The shader to set. This must have a 4x4
  *     matrix uniform named view_matrix, or this call will do nothing.
  */
-Selenium_Graphics_Camera.SetView = function(shader) {
+Selenium_Graphics_Camera.SetView = function(shader = last_shader) {
+    last_shader = shader;
     Selenium_Graphics_Shaders.SetUniform(
         shader, "m4_view_matrix", Selenium_Graphics_Camera.Position);
 };
