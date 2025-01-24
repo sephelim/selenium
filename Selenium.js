@@ -20,7 +20,6 @@ import {Selenium_Assets} from "./Framework/Assets.js";
 import {Selenium_Data} from "./Framework/Data.js";
 import {Selenium_Graphics} from "./Framework/Graphics.js";
 import {Selenium_Input} from "./Framework/Input.js";
-import {Selenium_Logging} from "./Framework/Logging.js";
 import {Selenium_Utilities} from "./Framework/Utilities.js";
 
 import {GLMatrix} from "./Dependencies/GLMatrix.js";
@@ -103,7 +102,7 @@ function EnterGameData(global_config)
     if (keywords != undefined) Selenium.Data.Keywords = keywords[0];
 
     Selenium.Data.License.value = game_section.get("license")[0];
-    Selenium.Logging.Success("Created game data interface.");
+    Selenium.Utilities.Success("Created game data interface.");
 }
 
 /**
@@ -113,21 +112,21 @@ function EnterGameData(global_config)
  */
 async function LoadGameDocuments()
 {
-    Selenium.Logging.Log("Grabbing license and README.");
+    Selenium.Utilities.Log("Grabbing license and README.");
     const license_response = await Selenium.Assets.LoadFile("/LICENSE.md");
     const readme_response = await Selenium.Assets.LoadFile("/README.md");
 
     if (license_response != null)
     {
         Selenium.Data.License.body = await license_response.text();
-        Selenium.Logging.Success("Found license.");
+        Selenium.Utilities.Success("Found license.");
     }
-    else Selenium.Logging.Panic("Missing license.");
+    else Selenium.Utilities.Panic("Missing license.");
     // We don't panic here because READMEs are not necessarily required.
     if (readme_response != null)
     {
         Selenium.Data.Readme = await readme_response.text();
-        Selenium.Logging.Success("Found README.");
+        Selenium.Utilities.Success("Found README.");
     }
 }
 
@@ -274,14 +273,6 @@ Selenium.Graphics = Selenium_Graphics;
 Selenium.Input = Selenium_Input;
 
 /**
- * The Selenium logging namespace. This provides logic for logging
- * strings to the console and pushing them into the log buffer, along
- * with things like stack traces.
- * @since 0.0.1
- */
-Selenium.Logging = Selenium_Logging;
-
-/**
  * Miscellaneous utility objects, like general-purpose regexes and
  * extensions to existing Javascript objects.
  * @since 0.0.1
@@ -306,7 +297,7 @@ Selenium.Start = async function() {
     if (view_canvas instanceof HTMLCanvasElement)
         Selenium.Graphics.GL =
             view_canvas.getContext("webgl2", {antialias: false});
-    else Selenium.Logging.Panic("Missing view canvas!");
+    else Selenium.Utilities.Panic("Missing view canvas!");
     globalThis.GL = Selenium.Graphics.GL;
 
     GL.enable(GL.DEPTH_TEST);
@@ -321,7 +312,7 @@ Selenium.Start = async function() {
         "/" + Selenium.Data.GetShortTitle() + "_Scripts/Entry.js");
     if (entry_script.Main == undefined ||
         typeof (entry_script.Main) != "function")
-        Selenium.Logging.Panic("Missing script entrypoint.");
+        Selenium.Utilities.Panic("Missing script entrypoint.");
 
     await entry_script.Main();
 

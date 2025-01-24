@@ -16,7 +16,7 @@
 
 // #region Module Dependencies
 
-import {Selenium_Logging} from "../Logging.js";
+import {Selenium_Utilities} from "../Utilities.js";
 
 import {Selenium_Graphics_Shaders} from "./Shaders.js";
 
@@ -99,7 +99,7 @@ function MoveCamera(args)
 {
     if (args == undefined || typeof (args[0]) != "string")
     {
-        Selenium_Logging.Warning(
+        Selenium_Utilities.Warning(
             "MoveCamera provided malformed arguments.");
         return;
     }
@@ -129,7 +129,7 @@ function MoveCamera(args)
                     -Selenium_Graphics_Camera.Speed / 2);
             break;
         default:
-            Selenium_Logging.Warning(
+            Selenium_Utilities.Warning(
                 "MoveCamera provided malformed arguments.");
             return;
     }
@@ -148,7 +148,7 @@ function StopCamera(args)
 {
     if (args == undefined || typeof (args[0]) != "string")
     {
-        Selenium_Logging.Warning(
+        Selenium_Utilities.Warning(
             "StopCamera provided malformed arguments.");
         return;
     }
@@ -172,7 +172,7 @@ function StopCamera(args)
             right_movement_interval = null;
             break;
         default:
-            Selenium_Logging.Warning(
+            Selenium_Utilities.Warning(
                 "StopCamera provided malformed arguments.");
             return;
     }

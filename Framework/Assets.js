@@ -16,7 +16,6 @@
 // #region Module Dependencies
 
 import {Selenium_Data} from "./Data.js";
-import {Selenium_Logging} from "./Logging.js";
 import {Selenium_Utilities} from "./Utilities.js";
 
 import {Selenium_Input_Keyboard} from "./Input/Keyboard.js";
@@ -38,14 +37,14 @@ function HandleResponse(response)
     switch (response.status)
     {
         case 200: return true; // Success!
-        case 400: Selenium_Logging.Error("Bad request."); return;
-        case 401: Selenium_Logging.Error("Unauthorized."); return;
-        case 403: Selenium_Logging.Error("Forbidden."); return;
-        case 404: Selenium_Logging.Error("Not found."); return;
-        case 408: Selenium_Logging.Error("Request timeout."); return;
-        case 414: Selenium_Logging.Error("URI too long."); return;
-        case 415: Selenium_Logging.Error("Unsupported media."); return;
-        case 429: Selenium_Logging.Error("Too many requests."); return;
+        case 400: Selenium_Utilities.Error("Bad request."); return;
+        case 401: Selenium_Utilities.Error("Unauthorized."); return;
+        case 403: Selenium_Utilities.Error("Forbidden."); return;
+        case 404: Selenium_Utilities.Error("Not found."); return;
+        case 408: Selenium_Utilities.Error("Request timeout."); return;
+        case 414: Selenium_Utilities.Error("URI too long."); return;
+        case 415: Selenium_Utilities.Error("Unsupported media."); return;
+        case 429: Selenium_Utilities.Error("Too many requests."); return;
         default:  return false;
     }
 }
@@ -192,7 +191,8 @@ function ParseValue(type, section, key, value)
                     if (value == "All") return 0;
                     else if (value == "Errors") return 1;
                     else if (value == "Panics") return 2;
-                    else Selenium_Logging.Panic("Malformed game config.");
+                    else
+                        Selenium_Utilities.Panic("Malformed game config.");
                 }
             }
 
@@ -275,10 +275,11 @@ function ParseConfig(type, contents)
             if (!CheckSectionName(type, section_name_temp))
             {
                 if (type == "global")
-                    Selenium_Logging.Panic("Malformed game config.");
+                    Selenium_Utilities.Panic("Malformed game config.");
                 else
                 {
-                    Selenium_Logging.Warning("Malformed config section.");
+                    Selenium_Utilities.Warning(
+                        "Malformed config section.");
                     continue;
                 }
             }
@@ -291,7 +292,7 @@ function ParseConfig(type, contents)
         {
             key = line.substring(0, line.indexOf("="));
             if (!CheckKeyName(type, section_name, key))
-                Selenium_Logging.Panic("Malformed game config.");
+                Selenium_Utilities.Panic("Malformed game config.");
 
             const value_string = line.substring(line.indexOf("=") + 1);
             const value =
@@ -299,7 +300,7 @@ function ParseConfig(type, contents)
 
             if (type == "keymap" && value == null)
             {
-                Selenium_Logging.Error(
+                Selenium_Utilities.Error(
                     "Failed to find requested function '" + value_string +
                     "'.");
                 continue;
@@ -311,7 +312,7 @@ function ParseConfig(type, contents)
         {
             let subkey = line.substring(1, line.indexOf("="));
             if (!CheckSubkeyName(type, section_name, key, subkey))
-                Selenium_Logging.Panic("Malformed game config.");
+                Selenium_Utilities.Panic("Malformed game config.");
 
             const value_string = line.substring(line.indexOf("=") + 1);
             section.get(key)[1].set(subkey, value_string);
@@ -326,13 +327,13 @@ function ParseConfig(type, contents)
         const engine_section = parsed_contents.get("Selenium");
         const game_section = parsed_contents.get("Game");
         if (engine_section == undefined || game_section == undefined)
-            Selenium_Logging.Panic("Malformed game config.");
+            Selenium_Utilities.Panic("Malformed game config.");
 
         if (engine_section.get("mode") == undefined ||
             game_section.get("title") == undefined ||
             game_section.get("author") == undefined ||
             game_section.get("license") == undefined)
-            Selenium_Logging.Panic("Malformed game config.");
+            Selenium_Utilities.Panic("Malformed game config.");
     }
 
     return parsed_contents;
@@ -381,7 +382,8 @@ Selenium_Assets.Configuration = class
     {
         this.type = type;
         this.contents = ParseConfig(type, contents);
-        Selenium_Logging.Success("Loaded config of type '" + type + "'.");
+        Selenium_Utilities.Success(
+            "Loaded config of type '" + type + "'.");
     }
 }
 
@@ -397,14 +399,14 @@ Selenium_Assets.Configuration = class
 Selenium_Assets.LoadFile = async function(path) {
     let file = null;
 
-    Selenium_Logging.Log("Loading file from '" + path + "'.");
+    Selenium_Utilities.Log("Loading file from '" + path + "'.");
     try
     {
         file = await fetch(path);
     }
     catch (error)
     {
-        Selenium_Logging.Error(
+        Selenium_Utilities.Error(
             "Failed to load file at path'" + path + "'.");
         return null;
     }
@@ -467,7 +469,7 @@ Selenium_Assets.LoadShader = async function(name) {
 
     const vertex_file = await Selenium_Assets.LoadFile(vertex_path);
     const fragment_file = await Selenium_Assets.LoadFile(fragment_path);
-    Selenium_Logging.Log("Compiling shader '" + name + "'.");
+    Selenium_Utilities.Log("Compiling shader '" + name + "'.");
     if (vertex_file == null || fragment_file == null) return null;
 
     let vertex_shader = GL.createShader(GL.VERTEX_SHADER);
@@ -480,21 +482,21 @@ Selenium_Assets.LoadShader = async function(name) {
     if (GL.getShaderParameter(vertex_shader, GL.COMPILE_STATUS) == false)
     {
         const info_log = GL.getShaderInfoLog(vertex_shader);
-        Selenium_Logging.Error(
+        Selenium_Utilities.Error(
             "Failed to compile vertex shader:\n" + info_log);
         return null;
     }
-    Selenium_Logging.Success("Compiled vertex shader.");
+    Selenium_Utilities.Success("Compiled vertex shader.");
 
     GL.compileShader(fragment_shader);
     if (GL.getShaderParameter(fragment_shader, GL.COMPILE_STATUS) == false)
     {
         const info_log = GL.getShaderInfoLog(fragment_shader);
-        Selenium_Logging.Error(
+        Selenium_Utilities.Error(
             "Failed to compile fragment shader:\n" + info_log);
         return null;
     }
-    Selenium_Logging.Success("Compiled fragment shader.");
+    Selenium_Utilities.Success("Compiled fragment shader.");
 
     let program = GL.createProgram();
     GL.attachShader(program, vertex_shader);
@@ -504,11 +506,11 @@ Selenium_Assets.LoadShader = async function(name) {
     if (!GL.getProgramParameter(program, GL.LINK_STATUS))
     {
         const info_log = GL.getProgramInfoLog(program);
-        Selenium_Logging.Error(
+        Selenium_Utilities.Error(
             "Failed to link shader program:\n" + info_log);
         return null;
     }
-    Selenium_Logging.Success("Linked shader program.");
+    Selenium_Utilities.Success("Linked shader program.");
 
     GL.deleteShader(vertex_shader);
     GL.deleteShader(fragment_shader);
