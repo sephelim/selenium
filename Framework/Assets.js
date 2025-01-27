@@ -18,10 +18,9 @@
 import {Selenium_Data} from "./Data.js";
 import {Selenium_Utilities} from "./Utilities.js";
 
-import {GL} from "./Graphics/GL.js";
-
 import {Selenium_Assets_Configurations} from "./Assets/Configurations.js";
 import {Selenium_Assets_Shaders} from "./Assets/Shaders.js";
+import {Selenium_Assets_Textures} from "./Assets/Textures.js";
 
 // #endregion Module Dependencies
 // #region Private Utilities
@@ -75,6 +74,8 @@ Selenium_Assets.Configurations = Selenium_Assets_Configurations;
  * @since 0.0.3
  */
 Selenium_Assets.Shaders = Selenium_Assets_Shaders;
+
+Selenium_Assets.Textures = Selenium_Assets_Textures;
 
 /**
  * Load a file from the given path.

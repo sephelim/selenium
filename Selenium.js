@@ -21,9 +21,10 @@ import {Selenium_Data} from "./Framework/Data.js";
 import {Selenium_Graphics} from "./Framework/Graphics.js";
 import {Selenium_Utilities} from "./Framework/Utilities.js";
 
+import {Selenium_Input_Camera} from "./Framework/Input/Camera.js";
+import {Selenium_Input_Commands} from "./Framework/Input/Commands.js";
 import {Selenium_Input_Keyboard} from "./Framework/Input/Keyboard.js";
 import {Selenium_Input_Mouse} from "./Framework/Input/Mouse.js";
-import {Selenium_Input_Camera} from "./Framework/Input/Camera.js";
 
 import {GL} from "./Framework/Graphics/GL.js";
 
@@ -279,6 +280,20 @@ Selenium.Input = Selenium.Input || {};
 Selenium.Input.__proto__ = null;
 
 /**
+ * The Selenium camera subnamespace of the input space. This provides
+ * functionality for setting and moving the camera view matrix.
+ * @since 0.0.5
+ */
+Selenium.Input.Camera = Selenium_Input_Camera;
+
+/**
+ * The Selenium commands subnamespace of the input space. This includes
+ * functionality for registering and using command functions.
+ * @since 0.0.6
+ */
+Selenium.Input.Commands = Selenium_Input_Commands;
+
+/**
  * The Selenium keyboard subnamespace of the input space. This contains
  * specifically keyboard-related input things, like loading keymaps and
  * re-binding keys.
@@ -293,13 +308,6 @@ Selenium.Input.Keyboard = Selenium_Input_Keyboard;
  * @since 0.0.5
  */
 Selenium.Input.Mouse = Selenium_Input_Mouse;
-
-/**
- * The Selenium camera subnamespace of the input space. This provides
- * functionality for setting and moving the camera view matrix.
- * @since 0.0.5
- */
-Selenium.Input.Camera = Selenium_Input_Camera;
 
 /**
  * Miscellaneous utility objects, like general-purpose regexes and

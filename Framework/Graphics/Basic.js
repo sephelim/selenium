@@ -20,6 +20,7 @@ import {Selenium_Graphics_Buffers} from "./Buffers.js";
 import {GL} from "./GL.js";
 
 import {Selenium_Assets_Shaders} from "../Assets/Shaders.js";
+import {Selenium_Assets_Textures} from "../Assets/Textures.js";
 
 import {GLMatrix} from "../../Dependencies/GLMatrix.js";
 
@@ -96,15 +97,15 @@ Selenium_Graphics_Basic.Model = class
      */
     color;
     /**
-     * The module's texture. This is applied via texture coordinates to
-     * every vertex. This is not assigned by default within the
-     * constructor.
+     * The path to the module's texture. This is applied via texture
+     * coordinates to every vertex. This is not assigned by default within
+     * the constructor.
      *
-     * @type {WebGLTexture}
+     * @type {string}
      * @since 0.0.6
      * @protected
      */
-    texture = null;
+    texture = "";
 
     /**
      * Create a new basic model. This does NOT unbind VAO/VBO/EBO, so child
@@ -184,6 +185,12 @@ Selenium_Graphics_Basic.Model = class
             Math.min(color.g / 255, 1.0), Math.min(color.b / 255, 1.0));
     }
 
+    async SetBackground(name = "")
+    {
+        this.texture = name;
+        if (name != "") await Selenium_Assets_Textures.Load(name);
+    }
+
     /**
      * Render the model.
      * @authors Sephelim
@@ -204,7 +211,8 @@ Selenium_Graphics_Basic.Model = class
             shader, "m4_model_matrix", this.transform);
         Selenium_Assets_Shaders.SetUniform(
             shader, "v3_model_color", this.color);
-        GL.bindTexture(GL.TEXTURE_2D, this.texture);
+        GL.bindTexture(GL.TEXTURE_2D,
+            Selenium_Assets_Textures.Loaded.get(this.texture));
 
         GL.drawElements(mode, index_count, GL.UNSIGNED_INT, 0);
     }
@@ -227,11 +235,9 @@ Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
      *     relation to the origin.
      * @param {number} scale The scale of the cube.
      * @param {Color} color The color to dye the cube.
-     * @param {string} texture The name of the image file to load for the
-     *     cube's texture.
      */
     constructor(position = {x: 0, y: 0, z: 0}, scale = 40,
-        color = {r: 255, g: 255, b: 255}, texture = null)
+        color = {r: 255, g: 255, b: 255})
     {
         // Clang-Format makes arrays HIDEOUS.
         // clang-format off
@@ -263,10 +269,6 @@ Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
         // clang-format on
 
         super(position, color, [raw_vao, raw_ebo]);
-
-        if (texture != null)
-            Selenium_Graphics_Buffers.TO(texture).then(
-                (v) => {this.texture = v});
 
         // Make sure none of our objects bleed into the global
         // rendering scope on accident.
@@ -310,11 +312,9 @@ Selenium_Graphics_Basic.Pyramid =
      *     in relation to the origin.
      * @param {number} scale The scale of the pyramid.
      * @param {Color} color The color to dye the pyramid.
-     * @param {string} texture The name of the image file to load for the
-     *     pyramid's texture.
      */
     constructor(position = {x: 0, y: 0, z: 0}, scale = 40,
-        color = {r: 255, g: 255, b: 255}, texture = null)
+        color = {r: 255, g: 255, b: 255})
     {
         // "Magic normal"--not quite sure what this fraction is, but Ian
         // probably knows.
@@ -338,10 +338,6 @@ Selenium_Graphics_Basic.Pyramid =
         // clang-format on
 
         super(position, color, [raw_vao, raw_ebo]);
-
-        if (texture != null)
-            Selenium_Graphics_Buffers.TO(texture).then(
-                (v) => {this.texture = v});
 
         // Make sure none of our objects bleed into the global
         // rendering scope on accident.

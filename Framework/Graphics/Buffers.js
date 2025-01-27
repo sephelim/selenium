@@ -69,31 +69,6 @@ Selenium_Graphics_Buffers.MO = function(positions, indices) {
     return [vao, vbo, ebo];
 };
 
-Selenium_Graphics_Buffers.TO = async function(path) {
-    let texture = GL.createTexture();
-    GL.bindTexture(GL.TEXTURE_2D, texture);
-
-    GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT);
-    GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
-
-    GL.texParameteri(
-        GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_LINEAR);
-    GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
-
-    const image = await Selenium_Assets.LoadImage("Textures/" + path);
-    if (image == null)
-    {
-        Selenium_Utilities.Error("Failed to load texture.");
-        return null;
-    }
-
-    GL.texImage2D(
-        GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, image);
-    GL.generateMipmap(GL.TEXTURE_2D);
-
-    return texture;
-};
-
 // #endregion Namespace Declarations
 // #region Module Exports
 

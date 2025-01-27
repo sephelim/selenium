@@ -17,8 +17,16 @@
 // #region Namespace Declaration
 
 /**
- * The Selenium commands subnamespace of the input space.
+ * The Selenium commands subnamespace of the input space. This includes
+ * functionality for registering and using command functions.
  * @since 0.0.6
  */
 var Selenium_Input_Commands = Selenium_Input_Commands || {};
 Selenium_Input_Commands.__proto__ = null;
+
+// #endregion Namespace Declaration
+// #region Module Exports
+
+export {Selenium_Input_Commands};
+
+// #endregion Module Exports
