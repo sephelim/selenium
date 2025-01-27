@@ -94,6 +94,16 @@ Selenium_Graphics_Basic.Model = class
      * @protected
      */
     color;
+    /**
+     * The module's texture. This is applied via texture coordinates to
+     * every vertex. This is not assigned by default within the
+     * constructor.
+     *
+     * @type {WebGLTexture}
+     * @since 0.0.6
+     * @protected
+     */
+    texture = null;
 
     /**
      * Create a new basic model. This does NOT unbind VAO/VBO/EBO, so child
@@ -112,22 +122,19 @@ Selenium_Graphics_Basic.Model = class
         this.vbo = buffers[1];
         this.ebo = buffers[2];
 
-        // I have exactly zero idea why stride is 2x the size of
-        // the attribute. I truly couldn't tell you. This is why I
-        // like Vulkan better. Man I miss Vulkan T-T
-        GL.vertexAttribPointer(0, 3, GL.FLOAT, false, 24, 0);
+        GL.vertexAttribPointer(0, 3, GL.FLOAT, false, 32, 0);
         GL.enableVertexAttribArray(0);
 
-        GL.vertexAttribPointer(1, 3, GL.FLOAT, true, 24, 12);
+        GL.vertexAttribPointer(1, 3, GL.FLOAT, false, 32, 12);
         GL.enableVertexAttribArray(1);
+
+        GL.vertexAttribPointer(2, 2, GL.FLOAT, false, 32, 24);
+        GL.enableVertexAttribArray(2);
 
         this.transform = GLMatrix.Mat4.create();
         GLMatrix.Mat4.fromTranslation(this.transform,
             GLMatrix.Vec3.fromValues(position.x, position.y, position.z));
         this.Dye(color);
-        // this.color = GLMatrix.Vec3.fromValues(Math.min(color.r /
-        // 255, 1.0),
-        //     Math.min(color.g / 255, 1.0), Math.min(color.b / 255, 1.0));
     }
 
     /**
@@ -196,6 +203,7 @@ Selenium_Graphics_Basic.Model = class
             shader, "m4_model_matrix", this.transform);
         Selenium_Graphics_Shaders.SetUniform(
             shader, "v3_model_color", this.color);
+        GL.bindTexture(GL.TEXTURE_2D, this.texture);
 
         GL.drawElements(mode, index_count, GL.UNSIGNED_INT, 0);
     }
@@ -220,26 +228,26 @@ Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
      * @param {Color} color The color to dye the cube.
      */
     constructor(position = {x: 0, y: 0, z: 0}, scale = 40,
-        color = {r: 255, g: 0, b: 0})
+        color = {r: 255, g: 255, b: 255}, texture = null)
     {
         // Clang-Format makes arrays HIDEOUS.
         // clang-format off
         const raw_vao = new Float32Array([
             // Top tile
-            0.0,     0.0,     0.0,  0.0, 0.0, 1.0, // (xyz, uvw)
-            0.0,     scale,   0.0,  0.0, 0.0, 1.0,
-            scale,   scale,   0.0,  0.0, 0.0, 1.0,
-            scale,   0.0,     0.0,  0.0, 0.0, 1.0,
+            0.0,     0.0,     0.0,  0.0, 0.0, 1.0, 1.0, 1.0, // (xyz, uvw, rs)
+            0.0,     scale,   0.0,  0.0, 0.0, 1.0, 1.0, 0.0,
+            scale,   scale,   0.0,  0.0, 0.0, 1.0, 0.0, 0.0,
+            scale,   0.0,     0.0,  0.0, 0.0, 1.0, 0.0, 1.0,
             // Left tile
-            scale*2, scale*2, 0.0, 1.0, 0.0, 0.0,
-            scale,   scale,   0.0, 1.0, 0.0, 0.0,
-            scale,   0.0,     0.0, 1.0, 0.0, 0.0,
-            scale*2, scale,   0.0, 1.0, 0.0, 0.0,
+            scale*2, scale*2, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0,
+            scale,   scale,   0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
+            scale,   0.0,     0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
+            scale*2, scale,   0.0, 1.0, 0.0, 0.0, 0.0, 1.0,
             // Right tile 
-            scale,   scale*2, 0.0, 0.0, 1.0, 0.0,
-            0.0,     scale,   0.0, 0.0, 1.0, 0.0,
-            scale,   scale,   0.0, 0.0, 1.0, 0.0,
-            scale*2, scale*2, 0.0, 0.0, 1.0, 0.0,
+            scale,   scale*2, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0,
+            0.0,     scale,   0.0, 0.0, 1.0, 0.0, 1.0, 0.0,
+            scale,   scale,   0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+            scale*2, scale*2, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0
         ]);
         const raw_ebo = new Uint32Array([
             0,  1,  2, // (v1, v2, v3)
@@ -252,6 +260,9 @@ Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
         // clang-format on
 
         super(position, color, [raw_vao, raw_ebo]);
+
+        Selenium_Graphics_Buffers.TO("placeholder.png")
+            .then((v) => {this.texture = v});
 
         // Make sure none of our objects bleed into the global
         // rendering scope on accident.
@@ -278,9 +289,9 @@ Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
 };
 
 /**
- * A "pyramid." Because of the isometric nature of Selenium, it does not
- * support rotation in 3D space, and therefore to save memory only the
- * faces of the pyramid possibly facing the player are defined.
+ * A "pyramid." Because of the isometric nature of Selenium, it does
+ * not support rotation in 3D space, and therefore to save memory only
+ * the faces of the pyramid possibly facing the player are defined.
  * @since 0.0.4
  */
 Selenium_Graphics_Basic.Pyramid =
@@ -291,8 +302,8 @@ Selenium_Graphics_Basic.Pyramid =
      * @authors Sephelim
      * @since 0.0.4
      *
-     * @param {Position} position The initial position of the pyramid in
-     *     relation to the origin.
+     * @param {Position} position The initial position of the pyramid
+     *     in relation to the origin.
      * @param {number} scale The scale of the pyramid.
      * @param {Color} color The color to dye the pyramid.
      */
@@ -326,15 +337,16 @@ Selenium_Graphics_Basic.Pyramid =
     }
 
     /**
-     * Render the pyramid. This does not check internal pyramid state, if
-     * the pyramid's been destroyed this call will generate many warnings.
+     * Render the pyramid. This does not check internal pyramid state,
+     * if the pyramid's been destroyed this call will generate many
+     * warnings.
      * @authors Sephelim
      * @since 0.0.4
      *
-     * @note The given shader must have vertex locations taken as a vec3 of
-     * floats in attribute location 0, and two uniforms, a 4x4 matrix for
-     * the model transformation and a three component vector for color,
-     * "model_matrix" and "model_color" respectively.
+     * @note The given shader must have vertex locations taken as a
+     * vec3 of floats in attribute location 0, and two uniforms, a 4x4
+     * matrix for the model transformation and a three component vector
+     * for color, "model_matrix" and "model_color" respectively.
      *
      * @param {string} shader The shader to render with. If this shader
      *     isn't real, this function will return without operation.

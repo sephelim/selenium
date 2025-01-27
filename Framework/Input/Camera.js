@@ -1,5 +1,5 @@
 /**
- * @file Graphics/Camera.js
+ * @file Input/Camera.js
  * @authors Sephelim, Ian
  * @brief This file provides functionality for creating and utilizing a
  * camera within Selenium. This includes things like 4-dimensional

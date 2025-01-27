@@ -425,12 +425,33 @@ Selenium_Assets.LoadFile = async function(path) {
  *
  * @param {string} path The path to the file within the game asset
  *     directory.
- * @returns {Promise<ImageBitmap>} The loaded image.
+ * @returns {Promise<ImageBitmap | null>} The loaded image, or null if an
+ *     error occurred.
  */
-Selenium_Assets.LoadImage = async function(path) {
+Selenium_Assets.LoadImageBitmap = async function(path) {
     const file_response = await Selenium_Assets.LoadFile(
         "/" + Selenium_Data.GetShortTitle() + "_Assets/" + path);
+    if (file_response == null) return null;
     return await createImageBitmap(await file_response.blob());
+};
+
+/**
+ * Load an image buffer from within the game asset directory.
+ * @authors Sephelim
+ * @since 0.0.6
+ *
+ * @param {string} path The path to the file within the game asset
+ *     directory.
+ * @returns {Promise<HTMLImageElement | null>} The loaded image, or null
+ *     if an error occurred.
+ */
+Selenium_Assets.LoadImage = async function(path) {
+    let image = new Image();
+    image.src = Selenium_Data.GetAssetDirectory() + "/" + path;
+
+    await new Promise(
+        (resolve) => {image.onload = async () => { resolve(true) }});
+    return image;
 };
 
 /**
