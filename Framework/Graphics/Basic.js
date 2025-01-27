@@ -283,10 +283,10 @@ Selenium_Graphics_Basic.Cube = class extends Selenium_Graphics_Basic.Model
      * @authors Sephelim
      * @since 0.0.4
      *
-     * @note The given shader must have vertex locations taken as a vec3 of
-     * floats in attribute location 0, and two uniforms, a 4x4 matrix for
-     * the model transformation and a three component vector for color,
-     * "model_matrix" and "model_color" respectively.
+     * @note The given shader must at the very least have vertex locations
+     * taken as a vec3 of floats in attribute location 0, and two uniforms,
+     * a 4x4 matrix for the model transformation and a three component
+     * vector for color, "model_matrix" and "model_color" respectively.
      *
      * @param {string} shader The shader to render with. If this shader
      *     isn't real, this function will return without operation.
