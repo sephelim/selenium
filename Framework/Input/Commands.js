@@ -1,11 +1,10 @@
 /**
  * @file Graphics/Camera.js
  * @authors Ian
- * @brief This file allows selenium programs to make commands, and process 
- * commands. Commands could be inputed throuh the devtools console or an 
- * ingame system.
- *    
- * @since 0.0.5
+ * @brief This file allows Selenium functions to make and process commands.
+ * Commands can be input through the browser developer console or an
+ * in-game system.
+ * @since 0.0.6
  *
  * @license AGPLv3
  * @copyright (c) 2025 the Selenium Development Team
@@ -18,8 +17,8 @@
 // #region Namespace Declaration
 
 /**
- * The Selenium commands subnamespace 
- * @since 0.0.5
+ * The Selenium commands subnamespace of the input space.
+ * @since 0.0.6
  */
 var Selenium_Input_Commands = Selenium_Input_Commands || {};
 Selenium_Input_Commands.__proto__ = null;
