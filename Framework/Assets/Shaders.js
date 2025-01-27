@@ -1,5 +1,5 @@
 /**
- * @file Graphics/Shaders.js
+ * @file Assets/Shaders.js
  * @authors Sephelim
  * @brief This file provides the shader side of graphics programming with
  * Selenium. Things like loading, compiling, and registering shaders are
@@ -17,32 +17,35 @@
 // #region Module Dependencies
 
 import {Selenium_Assets} from "../Assets.js";
-import {GL} from "./GL.js";
+import {Selenium_Data} from "../Data.js";
+import {Selenium_Utilities} from "../Utilities.js";
+
+import {GL} from "../Graphics/GL.js";
 
 // #endregion Module Dependencies
 // #region Namespace Declarations
 
 /**
- * The shader subnamespace of the graphics space. This provides
- * functionality for loading and using shaders.
+ * The shader subnamespace of the asset space. This provides functionality
+ * for loading and using shaders.
  * @since 0.0.3
  */
-var Selenium_Graphics_Shaders = Selenium_Graphics_Shaders || {};
-Selenium_Graphics_Shaders.__proto__ = null;
+var Selenium_Assets_Shaders = Selenium_Assets_Shaders || {};
+Selenium_Assets_Shaders.__proto__ = null;
 
 /**
  * A hashmap of the loaded scenes keyed by their name.
  * @type {Map<string, Shader>}
  * @since 0.0.3
  */
-Selenium_Graphics_Shaders.Loaded = new Map();
+Selenium_Assets_Shaders.Loaded = new Map();
 
 /**
  * A shader structure. This contains some information beyond the raw
  * program, notably any already-grabbed shader uniforms.
  * @since 0.0.3
  */
-Selenium_Graphics_Shaders.Shader = class
+Selenium_Assets_Shaders.Shader = class
 {
     /**
      * The underlying shader program.
@@ -80,11 +83,62 @@ Selenium_Graphics_Shaders.Shader = class
  * @returns {Promise<boolean>} A flag representing the success state of the
  *     shader's compilation.
  */
-Selenium_Graphics_Shaders.Register = async function(name) {
-    const shader = await Selenium_Assets.LoadShader(name);
-    if (shader == null) return false;
-    Selenium_Graphics_Shaders.Loaded.set(
-        name, new Selenium_Graphics_Shaders.Shader(shader));
+Selenium_Assets_Shaders.Register = async function(name) {
+    const base_path =
+        Selenium_Data.GetAssetDirectory() + "/Shaders/" + name;
+    const vertex_path = base_path + "/vertex.vs";
+    const fragment_path = base_path + "/fragment.fs";
+
+    const vertex_file = await Selenium_Assets.LoadFile(vertex_path);
+    const fragment_file = await Selenium_Assets.LoadFile(fragment_path);
+    Selenium_Utilities.Log("Compiling shader '" + name + "'.");
+    if (vertex_file == null || fragment_file == null) return false;
+
+    let vertex_shader = GL.createShader(GL.VERTEX_SHADER);
+    let fragment_shader = GL.createShader(GL.FRAGMENT_SHADER);
+
+    GL.shaderSource(vertex_shader, await vertex_file.text());
+    GL.shaderSource(fragment_shader, await fragment_file.text());
+
+    GL.compileShader(vertex_shader);
+    if (GL.getShaderParameter(vertex_shader, GL.COMPILE_STATUS) == false)
+    {
+        const info_log = GL.getShaderInfoLog(vertex_shader);
+        Selenium_Utilities.Error(
+            "Failed to compile vertex shader:\n" + info_log);
+        return false;
+    }
+    Selenium_Utilities.Success("Compiled vertex shader.");
+
+    GL.compileShader(fragment_shader);
+    if (GL.getShaderParameter(fragment_shader, GL.COMPILE_STATUS) == false)
+    {
+        const info_log = GL.getShaderInfoLog(fragment_shader);
+        Selenium_Utilities.Error(
+            "Failed to compile fragment shader:\n" + info_log);
+        return false;
+    }
+    Selenium_Utilities.Success("Compiled fragment shader.");
+
+    let program = GL.createProgram();
+    GL.attachShader(program, vertex_shader);
+    GL.attachShader(program, fragment_shader);
+    GL.linkProgram(program);
+
+    if (!GL.getProgramParameter(program, GL.LINK_STATUS))
+    {
+        const info_log = GL.getProgramInfoLog(program);
+        Selenium_Utilities.Error(
+            "Failed to link shader program:\n" + info_log);
+        return false;
+    }
+    Selenium_Utilities.Success("Linked shader program.");
+
+    GL.deleteShader(vertex_shader);
+    GL.deleteShader(fragment_shader);
+
+    Selenium_Assets_Shaders.Loaded.set(
+        name, new Selenium_Assets_Shaders.Shader(program));
     return true;
 };
 
@@ -97,8 +151,8 @@ Selenium_Graphics_Shaders.Register = async function(name) {
  * @returns {Shader | null} The shader, or null if a shader with the given
  *     name didn't exist.
  */
-Selenium_Graphics_Shaders.Get = function(name) {
-    const shader = Selenium_Graphics_Shaders.Loaded.get(name);
+Selenium_Assets_Shaders.Get = function(name) {
+    const shader = Selenium_Assets_Shaders.Loaded.get(name);
     if (shader == undefined) return null;
     return shader;
 };
@@ -112,8 +166,8 @@ Selenium_Graphics_Shaders.Get = function(name) {
  * @returns {boolean} A flag representing whether or not we were able to
  *     find the requested shader.
  */
-Selenium_Graphics_Shaders.Use = function(name) {
-    const shader = Selenium_Graphics_Shaders.Loaded.get(name);
+Selenium_Assets_Shaders.Use = function(name) {
+    const shader = Selenium_Assets_Shaders.Loaded.get(name);
     if (shader == undefined) return false;
     GL.useProgram(shader.program);
     return true;
@@ -130,8 +184,8 @@ Selenium_Graphics_Shaders.Use = function(name) {
  *     something went wrong (shader nonexistant, unknown uniform name,
  *     etc).
  */
-Selenium_Graphics_Shaders.GetUniform = function(name, uniform_name) {
-    const shader = Selenium_Graphics_Shaders.Loaded.get(name);
+Selenium_Assets_Shaders.GetUniform = function(name, uniform_name) {
+    const shader = Selenium_Assets_Shaders.Loaded.get(name);
     if (shader == undefined) return null;
     const cached_location = shader.locations.get(uniform_name);
     if (cached_location != undefined && cached_location instanceof
@@ -156,8 +210,8 @@ Selenium_Graphics_Shaders.GetUniform = function(name, uniform_name) {
  *     something went wrong (shader nonexistant, unknown attribute name,
  *     etc).
  */
-Selenium_Graphics_Shaders.GetAttribute = function(name, attribute_name) {
-    const shader = Selenium_Graphics_Shaders.Loaded.get(name);
+Selenium_Assets_Shaders.GetAttribute = function(name, attribute_name) {
+    const shader = Selenium_Assets_Shaders.Loaded.get(name);
     if (shader == undefined) return null;
     const cached_location = shader.locations.get(attribute_name);
     if (cached_location != undefined &&
@@ -186,13 +240,12 @@ Selenium_Graphics_Shaders.GetAttribute = function(name, attribute_name) {
  * @returns {boolean} A flag representing whether or not the operation
  *     succeeded.
  */
-Selenium_Graphics_Shaders.SetUniform = function(
-    name, uniform_name, value) {
+Selenium_Assets_Shaders.SetUniform = function(name, uniform_name, value) {
     const location =
-        Selenium_Graphics_Shaders.GetUniform(name, uniform_name);
+        Selenium_Assets_Shaders.GetUniform(name, uniform_name);
     if (location == null) return false;
 
-    Selenium_Graphics_Shaders.Use(name);
+    Selenium_Assets_Shaders.Use(name);
     const uniform_type = uniform_name.substring(0, 2);
     switch (uniform_type)
     {
@@ -208,10 +261,10 @@ Selenium_Graphics_Shaders.SetUniform = function(
 // #region Module Exports
 
 /**
- * @typedef {Selenium_Graphics_Shaders.Shader} Shader A shader object.
+ * @typedef {Selenium_Assets_Shaders.Shader} Shader A shader object.
  * @since 0.0.3
  */
 
-export {Selenium_Graphics_Shaders};
+export {Selenium_Assets_Shaders};
 
 // #endregion Module exports

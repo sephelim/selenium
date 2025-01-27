@@ -18,7 +18,7 @@
 
 import {Selenium_Utilities} from "../Utilities.js";
 
-import {Selenium_Graphics_Shaders} from "../Graphics/Shaders.js";
+import {Selenium_Assets_Shaders} from "../Assets/Shaders.js";
 
 import {Selenium_Input_Keyboard} from "../Input/Keyboard.js";
 
@@ -228,7 +228,7 @@ Selenium_Input_Camera.Speed = 1.0;
  */
 Selenium_Input_Camera.SetView = function(shader = last_shader) {
     last_shader = shader;
-    Selenium_Graphics_Shaders.SetUniform(
+    Selenium_Assets_Shaders.SetUniform(
         shader, "m4_view_matrix", Selenium_Input_Camera.Position);
 };
 

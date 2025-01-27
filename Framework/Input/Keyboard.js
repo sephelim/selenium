@@ -159,7 +159,7 @@ Selenium_Input_Keyboard.ReleaseCallbacks = new Map();
  */
 Selenium_Input_Keyboard.LoadMap = async function(name) {
     const loaded_map =
-        await Selenium_Assets.LoadConfiguration("keymap", name);
+        await Selenium_Assets.Configurations.Load("keymap", name);
     if (loaded_map == null) return;
     Selenium_Input_Keyboard.Map = loaded_map.contents;
 };

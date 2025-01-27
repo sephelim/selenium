@@ -30,7 +30,7 @@ import {GL} from "./Framework/Graphics/GL.js";
 import {GLMatrix} from "./Dependencies/GLMatrix.js";
 
 /**
- * @import {ConfigBody} from "./Framework/Assets.js"
+ * @import {ConfigBody} from "./Framework/Assets/Configurations.js"
  * @import {Renderer, LogicLine} from "./Framework/Data.js"
  */
 
@@ -317,7 +317,7 @@ Selenium.Utilities = Selenium_Utilities;
  */
 Selenium.Start = async function() {
     const global_config =
-        await Selenium.Assets.LoadConfiguration("global", "Game");
+        await Selenium.Assets.Configurations.Load("global", "Game");
     EnterGameData(global_config.contents);
     await LoadGameDocuments();
     ConstructDocument();

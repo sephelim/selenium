@@ -18,7 +18,6 @@
 
 import {Selenium_Graphics_Basic} from "./Graphics/Basic.js";
 import {Selenium_Graphics_Buffers} from "./Graphics/Buffers.js";
-import {Selenium_Graphics_Shaders} from "./Graphics/Shaders.js";
 import {GL, LoadGL} from "./Graphics/GL.js";
 
 import {GLMatrix} from "../Dependencies/GLMatrix.js";
@@ -52,13 +51,6 @@ Selenium_Graphics.Basic = Selenium_Graphics_Basic;
  * @since 0.0.3
  */
 Selenium_Graphics.Buffers = Selenium_Graphics_Buffers;
-
-/**
- * The shader subnamespace of the graphics space. This provides
- * functionality for loading and using shaders.
- * @since 0.0.3
- */
-Selenium_Graphics.Shaders = Selenium_Graphics_Shaders;
 
 /**
  * Load a WebGL context for the game.
