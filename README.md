@@ -8,7 +8,7 @@ Selenium is a Javsscript game framework built for creating isometric pixelart ga
 ---
 
 #### Usage
-Selenium is built to be a braindead-framework. All the WebGL (beyond complex shaders) is abstracted away, and in its place easy-to-understand interfaces remain. All you need to properly use the framework is a configured project and a copy of Selenium. For setup details, check out [the wiki](https://github.com/sephelim/selenium/wiki).
+Selenium is built to be a braindead-framework. All the WebGL (beyond out-of-scope shaders) is abstracted away, and in its place easy-to-understand interfaces remain. All you need to properly use the framework is a configured project and a copy of Selenium. For setup details, check out [the wiki](https://github.com/sephelim/selenium/wiki).
 
 > Found a bug or missing feature? Make a [pull request](https://github.com/sephelim/selenium/pulls) or [issue](https://github.com/sephelim/selenium/issues)! However, be sure your code follows the [contribution guidelines.](./CONTRIBUTING.md)
 
