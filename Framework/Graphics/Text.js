@@ -31,9 +31,10 @@ var Selenium_Graphics_Text = Selenium_Graphics_Text || {};
 Selenium_Graphics_Text.__proto__ = null;
 
 Selenium_Graphics_Text.Projection = GLMatrix.Mat4.create();
+console.log(window.innerWidth);
 GLMatrix.Mat4.perspective(Selenium_Graphics_Text.Projection,
-    GLMatrix.ToRadians(45), window.innerWidth / window.innerHeight, -0.1,
-    150);
+    GLMatrix.ToRadians(45), window.innerWidth / window.innerHeight, 0.1,
+    150.0);
 
 Selenium_Graphics_Text.RenderString = function(
     font, string, position, color) {
@@ -77,7 +78,7 @@ Selenium_Graphics_Text.RenderString = function(
     Selenium_Assets_Shaders.SetUniform("text", "v4_text_color",
         GLMatrix.Vec4.fromValues(Math.min(color.r / 255, 1.0),
             Math.min(color.g / 255, 1.0), Math.min(color.b / 255, 1.0),
-            1.0));
+            0.5));
     Selenium_Assets_Textures.Use("Fonts/kongtext-16.png");
 
     GL.drawElements(GL.TRIANGLES, 6, GL.UNSIGNED_INT, 0);

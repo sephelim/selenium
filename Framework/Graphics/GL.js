@@ -44,6 +44,8 @@ function LoadGL()
     else Selenium_Utilities.Panic("Missing view canvas!");
 
     GL.enable(GL.DEPTH_TEST);
+    GL.enable(GL.BLEND);
+    GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
 }
 
 // #endregion Namespace Declaration
