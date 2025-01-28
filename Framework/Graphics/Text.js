@@ -31,8 +31,9 @@ var Selenium_Graphics_Text = Selenium_Graphics_Text || {};
 Selenium_Graphics_Text.__proto__ = null;
 
 Selenium_Graphics_Text.Projection = GLMatrix.Mat4.create();
-GLMatrix.Mat4.perspective(Selenium_Graphics_Text.Projection, 45,
-    window.innerWidth / window.innerHeight, 0, 150);
+GLMatrix.Mat4.perspective(Selenium_Graphics_Text.Projection,
+    GLMatrix.ToRadians(45), window.innerWidth / window.innerHeight, -0.1,
+    150);
 
 Selenium_Graphics_Text.RenderString = function(
     font, string, position, color) {
@@ -41,10 +42,10 @@ Selenium_Graphics_Text.RenderString = function(
     // clang-format off
     const buffers = Selenium_Graphics_Buffers.MO(
         new Float32Array([
-            0.0, 0.0, 0.0, 0.0, 0.0, // (xyz, rs)
-            0.0, 100, 0.0, 0.0, 1.0,
-            100, 100, 0.0, 1.0, 1.0,
-            100, 0.0, 0.0, 1.0, 0.0
+            0.0, 0.0, 0.0, 1.0, 1.0, // (xyz, rs)
+            1.0, 0.0, 0.0, 0.0, 1.0,
+            1.0, 0.05, 0.0, 0.0, 0.0,
+            0.0, 0.05, 0.0, 1.0, 0.0
         ]),
         new Uint32Array([
             0, 1, 2,
