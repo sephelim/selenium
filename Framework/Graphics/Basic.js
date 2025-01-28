@@ -188,7 +188,7 @@ Selenium_Graphics_Basic.Model = class
     async SetBackground(name = "")
     {
         this.texture = name;
-        if (name != "") await Selenium_Assets_Textures.Load(name);
+        if (name != "") await Selenium_Assets_Textures.Register(name);
     }
 
     /**
@@ -211,8 +211,7 @@ Selenium_Graphics_Basic.Model = class
             shader, "m4_model_matrix", this.transform);
         Selenium_Assets_Shaders.SetUniform(
             shader, "v3_model_color", this.color);
-        GL.bindTexture(GL.TEXTURE_2D,
-            Selenium_Assets_Textures.Loaded.get(this.texture));
+        Selenium_Assets_Textures.Use(this.texture);
 
         GL.drawElements(mode, index_count, GL.UNSIGNED_INT, 0);
     }

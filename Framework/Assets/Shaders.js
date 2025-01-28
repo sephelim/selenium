@@ -251,6 +251,7 @@ Selenium_Assets_Shaders.SetUniform = function(name, uniform_name, value) {
     {
         case "m4": GL.uniformMatrix4fv(location, false, value); break;
         case "v3": GL.uniform3fv(location, value); break;
+        case "v4": GL.uniform4fv(location, value); break;
         case "b_": GL.uniform1i(location, value); break;
     }
 

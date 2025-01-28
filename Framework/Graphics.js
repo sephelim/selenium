@@ -19,6 +19,7 @@
 import {Selenium_Graphics_Basic} from "./Graphics/Basic.js";
 import {Selenium_Graphics_Buffers} from "./Graphics/Buffers.js";
 import {GL, LoadGL} from "./Graphics/GL.js";
+import {Selenium_Graphics_Text} from "./Graphics/Text.js";
 
 import {GLMatrix} from "../Dependencies/GLMatrix.js";
 
@@ -51,6 +52,8 @@ Selenium_Graphics.Basic = Selenium_Graphics_Basic;
  * @since 0.0.3
  */
 Selenium_Graphics.Buffers = Selenium_Graphics_Buffers;
+
+Selenium_Graphics.Text = Selenium_Graphics_Text;
 
 /**
  * Load a WebGL context for the game.

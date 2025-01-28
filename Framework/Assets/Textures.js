@@ -29,7 +29,7 @@ Selenium_Assets_Textures.__proto__ = null;
 
 Selenium_Assets_Textures.Loaded = new Map();
 
-Selenium_Assets_Textures.Load = async function(name) {
+Selenium_Assets_Textures.Register = async function(name) {
     // Prevent extraneous load operations.
     if (Selenium_Assets_Textures.Loaded.has(name)) return true;
 
@@ -57,6 +57,13 @@ Selenium_Assets_Textures.Load = async function(name) {
 
     Selenium_Assets_Textures.Loaded.set(name, texture);
     GL.bindTexture(GL.TEXTURE_2D, null);
+    return true;
+};
+
+Selenium_Assets_Textures.Use = function(name) {
+    const texture = Selenium_Assets_Textures.Loaded.get(name);
+    if (texture == undefined) return false;
+    GL.bindTexture(GL.TEXTURE_2D, texture);
     return true;
 };
 

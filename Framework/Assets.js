@@ -19,6 +19,7 @@ import {Selenium_Data} from "./Data.js";
 import {Selenium_Utilities} from "./Utilities.js";
 
 import {Selenium_Assets_Configurations} from "./Assets/Configurations.js";
+import {Selenium_Assets_Fonts} from "./Assets/Fonts.js";
 import {Selenium_Assets_Shaders} from "./Assets/Shaders.js";
 import {Selenium_Assets_Textures} from "./Assets/Textures.js";
 
@@ -60,6 +61,7 @@ function HandleResponse(response)
  * @since 0.0.1
  */
 var Selenium_Assets = Selenium_Assets || {};
+Selenium_Assets.__proto__ = null;
 
 /**
  * The configuration subnamespace of the asset space. This provides
@@ -76,6 +78,8 @@ Selenium_Assets.Configurations = Selenium_Assets_Configurations;
 Selenium_Assets.Shaders = Selenium_Assets_Shaders;
 
 Selenium_Assets.Textures = Selenium_Assets_Textures;
+
+Selenium_Assets.Fonts = Selenium_Assets_Fonts;
 
 /**
  * Load a file from the given path.
