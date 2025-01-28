@@ -33,9 +33,9 @@ Selenium_Assets_Fonts.Loaded = new Map();
  * @param {string} name
  * @returns
  */
-Selenium_Assets_Fonts.Register = function(name) {
+Selenium_Assets_Fonts.Register = async function(name) {
     const file_name = "Fonts/" + name + ".png";
-    const success = Selenium_Assets_Textures.Register(file_name);
+    const success = await Selenium_Assets_Textures.Register(file_name);
     if (!success) return false;
 
     const size = Number(name.substring(name.indexOf("-") + 1));

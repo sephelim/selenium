@@ -21,6 +21,8 @@ import {Selenium_Graphics_Buffers} from "./Graphics/Buffers.js";
 import {GL, LoadGL} from "./Graphics/GL.js";
 import {Selenium_Graphics_Text} from "./Graphics/Text.js";
 
+import {Selenium_Input_Keyboard} from "./Input/Keyboard.js";
+
 import {GLMatrix} from "../Dependencies/GLMatrix.js";
 
 /**
@@ -63,22 +65,14 @@ Selenium_Graphics.Text = Selenium_Graphics_Text;
 Selenium_Graphics.LoadGL = LoadGL;
 
 /**
- * The current projection matrix of the game. This is, by defaut, set in
- * the global resize method. To disable this behavior, set
- * Selenium_Graphics.CustomProjection to true.
+ * The current projection matrix of the game. This is set in the global
+ * resize method.
  * @type {Mat4}
  * @since 0.0.4
  */
 Selenium_Graphics.Projection = GLMatrix.Mat4.create();
 
-/**
- * A boolean flag representing whether or not a custom projection is set as
- * the current one. This disabled certain things, like automatic
- * recalculation on window resize.
- * @type {boolean}
- * @since 0.0.4
- */
-Selenium_Graphics.CustomProjection = false;
+Selenium_Graphics.ScaleFactor = 1.0;
 
 /**
  * Clears the screen to a pure color.
@@ -96,18 +90,40 @@ Selenium_Graphics.ClearScreen = function(r, g, b) {
 };
 
 /**
- * Scale the contents of the screen by the specified factor. This will not
- * be kept should the screen be resized or otherwise transformed.
+ * Scale the contents of the screen by the specified factor. This is an
+ * expensive operation, as it involves recalculating the entire view
+ * matrix.
  * @authors Sephelim
  * @since 0.0.5
  *
- * @param {GLclampf} factor The factor by which to scale the projection.
+ * @param {GLclampf} factor The factor by which to change the projection's
+ *     current scale.
  */
 Selenium_Graphics.Scale = function(factor) {
+    Selenium_Graphics.ScaleFactor += factor;
+
+    // The near/far planes are meaningless-Z is rotated 45 degrees.
+    GLMatrix.Mat4.ortho(Selenium_Graphics.Projection, 0, window.innerWidth,
+        window.innerHeight, 0, -window.innerHeight * 100,
+        window.innerWidth * 100);
+
+    // 90 - 35.264 (~arcsin(tan 30°))
+    GLMatrix.Mat4.rotateX(Selenium_Graphics.Projection,
+        Selenium_Graphics.Projection, GLMatrix.ToRadians(54.736));
+    GLMatrix.Mat4.rotateZ(Selenium_Graphics.Projection,
+        Selenium_Graphics.Projection, GLMatrix.ToRadians(45));
+
     GLMatrix.Mat4.scale(Selenium_Graphics.Projection,
         Selenium_Graphics.Projection,
-        GLMatrix.Vec3.fromValues(factor, factor, factor));
+        GLMatrix.Vec3.fromValues(Selenium_Graphics.ScaleFactor,
+            Selenium_Graphics.ScaleFactor, Selenium_Graphics.ScaleFactor));
 };
+
+Selenium_Input_Keyboard.PressCallbacks.set("Scale", function(args) {
+    //! arg checking needed
+    if (args[0] == "up") Selenium_Graphics.Scale(0.25);
+    else Selenium_Graphics.Scale(-0.25);
+});
 
 // #endregion Namespace Declaration
 // #region Module Exports

@@ -69,18 +69,17 @@ Selenium_Graphics_Text.RenderString = function(
     }
     GL.bindVertexArray(buffers[0]);
 
-    console.log(Selenium_Assets_Shaders.SetUniform("text",
-        "m4_projection_matrix", Selenium_Graphics_Text.Projection));
-    console.log(Selenium_Assets_Shaders.SetUniform(
-        "text", "m4_model_matrix", transform));
-    console.log(Selenium_Assets_Shaders.SetUniform("text", "v4_text_color",
+    Selenium_Assets_Shaders.SetUniform(
+        "text", "m4_projection_matrix", Selenium_Graphics_Text.Projection);
+    Selenium_Assets_Shaders.SetUniform(
+        "text", "m4_model_matrix", transform);
+    Selenium_Assets_Shaders.SetUniform("text", "v4_text_color",
         GLMatrix.Vec4.fromValues(Math.min(color.r / 255, 1.0),
             Math.min(color.g / 255, 1.0), Math.min(color.b / 255, 1.0),
-            1.0)));
-    console.log(Selenium_Assets_Textures.Use("Fonts/kongtext-16.png"));
+            1.0));
+    Selenium_Assets_Textures.Use("Fonts/kongtext-16.png");
 
     GL.drawElements(GL.TRIANGLES, 6, GL.UNSIGNED_INT, 0);
-    GL.bindTexture(GL.TEXTURE_2D, null);
 };
 
 // #endregion Namespace Declaration
