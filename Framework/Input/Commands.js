@@ -1,5 +1,5 @@
 /**
- * @file Graphics/Camera.js
+ * @file Imput/Commands.js
  * @authors Ian
  * @brief This file allows Selenium functions to make and process commands.
  * Commands can be input through the browser developer console or an
